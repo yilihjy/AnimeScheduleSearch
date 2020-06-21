@@ -92,7 +92,10 @@ const config = {
     patterns: [
       { from: 'src/sitemap.json', to: 'dist/sitemap.json' } // 指定需要 copy 的文件
     ]
-  }
+  },
+  plugins: [
+    '@tarojs/plugin-sass'
+  ]
 }
 
 module.exports = function (merge) {

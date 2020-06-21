@@ -44,7 +44,7 @@ class shellStore {
         if(title ==this.title) return
         for(let i = 0;i<this.routes.length;i++) {
             if(title===this.routes[i].title) {
-                this.title = title;
+                this.title = title
                 this.name = this.routes[i].name
                 const url = `/pages/${this.routes[i].name}/index`
                 if(this.isNewPage) {
@@ -66,8 +66,8 @@ class shellStore {
         console.info(`navigateByName(${name})`)
         for(let i = 0;i<this.routes.length;i++) {
             if(name===this.routes[i].name) {
-                this.title = this.routes[i].title;
-                this.name = name;
+                this.title = this.routes[i].title
+                this.name = name
                 const url = `/pages/${this.routes[i].name}/index`
                 if(this.isNewPage) {
                     Taro.navigateTo({
