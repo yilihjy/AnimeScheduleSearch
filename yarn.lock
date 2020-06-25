@@ -1089,9 +1089,9 @@
     "@tarojs/mobx-common" "^2.2.9"
     "@tarojs/taro" "^2.2.9"
 
-"@tarojs/plugin-sass@^2.2.9":
+"@tarojs/plugin-sass@2.2.9":
   version "2.2.9"
-  resolved "https://registry.npm.taobao.org/@tarojs/plugin-sass/download/@tarojs/plugin-sass-2.2.9.tgz?cache=0&sync_timestamp=1592323913884&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40tarojs%2Fplugin-sass%2Fdownload%2F%40tarojs%2Fplugin-sass-2.2.9.tgz#b7583924be0b8908e36642655d84fca24f9ec61a"
+  resolved "https://registry.npm.taobao.org/@tarojs/plugin-sass/download/@tarojs/plugin-sass-2.2.9.tgz#b7583924be0b8908e36642655d84fca24f9ec61a"
   integrity sha1-t1g5JL4LiQjjZkJlXYT8ok+exho=
   dependencies:
     "@tarojs/runner-utils" "^2.2.9"

@@ -63,27 +63,27 @@ export class DataStore {
 
     static matchTitle(element, keyword) {
         if (element.title.includes(keyword)) {
-            return true
+            return element.title
         } else if (element.titleTranslate['zh-Hans']) {
             for (let i = 0; i < element.titleTranslate['zh-Hans'].length; i++) {
                 if (element.titleTranslate['zh-Hans'][i].includes(keyword)) {
-                    return true
+                    return element.titleTranslate['zh-Hans'][i]
                 }
             }
         } else if (element.titleTranslate['zh-Hant']) {
             for (let i = 0; i < element.titleTranslate['zh-Hant'].length; i++) {
                 if (element.titleTranslate['zh-Hant'][i].includes(keyword)) {
-                    return true
+                    return element.titleTranslate['zh-Hant'][i]
                 }
             }
         } else if (element.titleTranslate.en) {
             for (let i = 0; i < element.titleTranslate.en.length; i++) {
                 if (element.titleTranslate.en[i].includes(keyword)) {
-                    return true
+                    return element.titleTranslate.en[i]
                 }
             }
         }
-        return false
+        return ''
     }
 
     filter (condition) {
