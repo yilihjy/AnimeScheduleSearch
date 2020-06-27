@@ -24,8 +24,10 @@ export class DataStore {
         const typeKey = []
         const yearMonthMap = {}
         const yearMonthKey = {}
+        let id = 0
 
         data.items.forEach((element) => {
+            element.id = id++
             const year = dateStringToYearString(element.begin)
             const month = dateStringToMonthString(element.begin)
             if (!yearKey.includes(year)) {
