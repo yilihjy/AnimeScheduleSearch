@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro'
 import { observable, action } from 'mobx'
+import md5 from 'blueimp-md5'
 import { dateStringToMonthString, dateStringToYearString} from '../utils/dateTools'
 
 export class DataStore {
@@ -8,28 +9,26 @@ export class DataStore {
     @observable yearMonthKey = {}
     @observable searchResult= []
     @observable filterResult= []
-
-    get siteMeta () {
-        return Taro.getStorageSync('siteMeta')
-    }
+    @observable siteMeta= []
+    @observable playingList = []
+    @observable latestMovieList = []
+    @observable latestOVAList = []
 
     @action.bound
-    initData(data) {
+    initData(data,fn) {
         console.log(data)
-        Taro.setStorage({
-            key: 'siteMeta',
-            data: data.siteMeta
-        })   
+        this.siteMeta = data.siteMeta
         const yearKey = []
         const typeKey = []
         const yearMonthMap = {}
         const yearMonthKey = {}
-        let id = 0
 
         data.items.forEach((element) => {
-            element.id = id++
+            element.id = md5(element.title)
             const year = dateStringToYearString(element.begin)
             const month = dateStringToMonthString(element.begin)
+            element.year = year
+            element.month = month
             if (!yearKey.includes(year)) {
                 yearKey.push(year)
                 yearMonthMap[year] = {}
@@ -43,10 +42,32 @@ export class DataStore {
             if (!typeKey.includes(element.type)) {
                 typeKey.push(element.type)
             }
+            if((element.type == 'tv' || element.type == 'web' ) && element.end == '') {
+                const playDate = new Date(element.begin)
+                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=100*86400000) {
+                    this.playingList.push(element)
+                }
+            }
+            if(element.type == 'movie') {
+                const playDate = new Date(element.begin)
+                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=3*7776000000) {
+                    this.latestMovieList.push(element)
+                }
+            }
+            if(element.type == 'ova') {
+                const playDate = new Date(element.begin)
+                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=3*7776000000) {
+                    this.latestOVAList.push(element)
+                }
+            }
         })
+        this.playingList = this.playingList.sort(DataStore.compareBegin)
+        this.latestMovieList = this.latestMovieList.sort(DataStore.compareBegin)
+        this.latestOVAList = this.latestOVAList.sort(DataStore.compareBegin)
         this.yearKey = yearKey
         this.typeKey = typeKey
         this.yearMonthKey = yearMonthKey
+        
         for(let y = 0; y < yearKey.length;y++) {
             const year = yearKey[y]
             Taro.setStorage({
@@ -54,6 +75,7 @@ export class DataStore {
                 data : yearMonthMap[year]
             })
         }
+        fn()
     }
 
     @action.bound
@@ -64,23 +86,24 @@ export class DataStore {
     }
 
     static matchTitle(element, keyword) {
-        if (element.title.includes(keyword)) {
+        keyword = keyword.toUpperCase()
+        if (element.title.toUpperCase().includes(keyword)) {
             return element.title
         } else if (element.titleTranslate['zh-Hans']) {
             for (let i = 0; i < element.titleTranslate['zh-Hans'].length; i++) {
-                if (element.titleTranslate['zh-Hans'][i].includes(keyword)) {
+                if (element.titleTranslate['zh-Hans'][i].toUpperCase().includes(keyword)) {
                     return element.titleTranslate['zh-Hans'][i]
                 }
             }
         } else if (element.titleTranslate['zh-Hant']) {
             for (let i = 0; i < element.titleTranslate['zh-Hant'].length; i++) {
-                if (element.titleTranslate['zh-Hant'][i].includes(keyword)) {
+                if (element.titleTranslate['zh-Hant'][i].toUpperCase().includes(keyword)) {
                     return element.titleTranslate['zh-Hant'][i]
                 }
             }
         } else if (element.titleTranslate.en) {
             for (let i = 0; i < element.titleTranslate.en.length; i++) {
-                if (element.titleTranslate.en[i].includes(keyword)) {
+                if (element.titleTranslate.en[i].toUpperCase().includes(keyword)) {
                     return element.titleTranslate.en[i]
                 }
             }
@@ -178,6 +201,27 @@ export class DataStore {
         Taro.removeStorage({
             key:'filterCache'
         })
+    }
+
+    static langCode2Text(lang) {
+        switch(lang) {
+            case 'ja': 
+              return '日文'
+            case 'zh-Hans': 
+            return '简体中文'
+            case 'zh-Hant': 
+            return '繁体中文'
+            case 'en':
+                return '英文'
+            default:
+                return lang
+          }
+    }
+
+    static compareBegin(a,b) {
+        const ad = new Date(a.begin)
+        const bd = new Date(b.begin)
+        return bd.valueOf()- ad.valueOf() 
     }
 
 }

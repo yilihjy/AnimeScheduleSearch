@@ -109,23 +109,7 @@ class Search extends Component {
 
   showNote(item) {
     let lang
-    switch(item.lang) {
-      case 'ja': 
-        lang = '日文'
-        break
-      case 'zh-Hans': 
-        lang = '简体中文'
-        break
-      case 'zh-Hant': 
-        lang = '繁体中文'
-        break
-      case 'en':
-        lang = '英文'
-        break
-      default:
-        lang = item.lang
-        break
-    }
+    lang = DataStore.langCode2Text(item.lang)
     return `${lang}/${item.type}`
   }
 
@@ -146,6 +130,12 @@ class Search extends Component {
     }
   }
 
+  onItemClick(item) {
+    Taro.navigateTo({
+      url: `/pages/detail/index?id=${item.id}&year=${item.year}&month=${item.month}`
+    })
+  }
+
   render () {
     const searchTipList = this.state.searchList.slice(0,10).map((value)=>{
       return (
@@ -154,6 +144,7 @@ class Search extends Component {
           title={this.showTitle(value)}
           arrow='right'
           iconInfo={{size: 15, value: 'search'}}
+          onClick={this.onItemClick.bind(this, value)}
         />
       )
     })
@@ -165,6 +156,7 @@ class Search extends Component {
           note={this.showNote(value)}
           extraText='放送详情'
           arrow='right'
+          onClick={this.onItemClick.bind(this, value)}
         />
       )
     })

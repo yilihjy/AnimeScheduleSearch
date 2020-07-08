@@ -7,6 +7,7 @@ class shellStore {
 
     @observable title = '首页'
     @observable name = 'index'
+    @observable loading = false
 
     @computed get meumItems() {
         return this.routes.filter((value)=>{
@@ -81,6 +82,16 @@ class shellStore {
                 return
             }
         }
+    }
+
+    @action.bound
+    showLoading() {
+        this.loading = true
+    }
+
+    @action.bound
+    hideLoading() {
+        this.loading = false
     }
 }
 

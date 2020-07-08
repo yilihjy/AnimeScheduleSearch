@@ -46,11 +46,16 @@ class App extends Component {
   componentDidCatchError () {}
 
   async requestData() {
+    shellStore.showLoading()
     const res = await Taro.request({
       url: 'https://cdn.jsdelivr.net/npm/bangumi-data@0.3/dist/data.json'
     })
     DataStore.clearFilterCache()
-    dataStore.initData(res.data)
+    dataStore.initData(res.data,()=>{
+      console.log(123)
+      shellStore.hideLoading()
+      console.log(shellStore.loading)
+    })
   }
 
   

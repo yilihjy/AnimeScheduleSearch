@@ -1,0 +1,37 @@
+/* eslint-disable react/sort-comp */
+import Taro, { Component } from '@tarojs/taro'
+import { Text } from '@tarojs/components'
+
+import './clipboardURL.scss'
+
+
+class ClipboardURL extends Component {
+
+  constructor (props) {
+    super(props)
+    this.state = { text: props.text }
+  }
+
+  onClickURL() {
+    Taro.setClipboardData({
+        data: this.state.text,
+        success: function () {
+          Taro.getClipboardData({
+            success: function (res) {
+              console.log(res.data) // data
+            }
+          })
+        }
+      })
+  }
+
+  render () {
+    return (
+      <Text onClick={this.onClickURL.bind(this)}>
+          {this.state.text}
+      </Text>
+    )
+  }
+}
+
+export default ClipboardURL 
