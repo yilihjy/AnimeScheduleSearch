@@ -36,6 +36,7 @@
 		"@tarojs/mobx": "2.2.10",
 		"@tarojs/mobx-h5": "2.2.10",
 		"@tarojs/plugin-sass": "2.2.10",
+		"@tarojs/plugin-terser": "^2.2.10",
 		"@tarojs/router": "2.2.10",
 		"@tarojs/taro": "2.2.10",
 		"@tarojs/taro-alipay": "2.2.10",
