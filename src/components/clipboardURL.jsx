@@ -16,11 +16,6 @@ class ClipboardURL extends Component {
     Taro.setClipboardData({
         data: this.state.text,
         success: function () {
-          Taro.getClipboardData({
-            success: function (res) {
-              console.log(res.data) // data
-            }
-          })
         }
       })
   }

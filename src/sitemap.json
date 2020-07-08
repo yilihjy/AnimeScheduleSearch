@@ -1,8 +1,12 @@
 {
     "rules": [
         {
-            "action": "allow",
-            "page": "*"
+            "action": "disallow",
+            "page": "pages/search/index"
+        },
+        {
+            "action": "disallow",
+            "page": "pages/history/index"
         }
     ]
 }

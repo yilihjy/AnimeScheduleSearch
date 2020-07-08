@@ -10,6 +10,7 @@ import  { DataStore } from '../../store/data'
 import { formatDate} from '../../utils/dateTools'
 import ClipboardURL from '../../components/clipboardURL'
 
+
 import './index.scss'
 
 @inject('shellStore')
@@ -74,7 +75,6 @@ class Detail extends Component {
   filterSites() {
     const {dataStore} = this.props
     const siteMeta = dataStore.siteMeta
-    console.log(this.state.bangumiData.sites,siteMeta)
     let onlineList = []
     let infoList = []
     let downloadList = []
@@ -118,7 +118,6 @@ class Detail extends Component {
         downloadList,
         foreignList
       })
-      console.log(element)
     })
   }
 

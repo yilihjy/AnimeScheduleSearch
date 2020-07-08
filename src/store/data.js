@@ -16,7 +16,6 @@ export class DataStore {
 
     @action.bound
     initData(data,fn) {
-        console.log(data)
         this.siteMeta = data.siteMeta
         const yearKey = []
         const typeKey = []
@@ -132,7 +131,6 @@ export class DataStore {
         } else if (filterYear !== 'all') {
             const yearData = Taro.getStorageSync(filterYear)
             for(let i = 0;i<this.yearMonthKey[filterYear].length;i++) {
-                console.log(this.yearMonthKey[filterYear][i])
                 const monthKey = this.yearMonthKey[filterYear][i]
                 const monthData = yearData[monthKey]
                 baseFilterMap = baseFilterMap.concat(monthData)

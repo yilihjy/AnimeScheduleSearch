@@ -18,7 +18,6 @@ class Loading extends Component {
 
 
   render () {
-    console.log(12345)
     const { shellStore: { loading } } = this.props
     let loadstatus
     if(loading) {

@@ -14,7 +14,6 @@ const store = {
 class App extends Component {
 
   componentWillMount() {
-    console.log(this.$router.params)
     onError(error => {
       console.log('mobx global error listener:', error)
     })
@@ -29,7 +28,9 @@ class App extends Component {
       'pages/about/index',
       'pages/detail/index',
       'pages/history/index',
+      'pages/historyList/index',
       'pages/search/index'
+      
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -52,9 +53,7 @@ class App extends Component {
     })
     DataStore.clearFilterCache()
     dataStore.initData(res.data,()=>{
-      console.log(123)
       shellStore.hideLoading()
-      console.log(shellStore.loading)
     })
   }
 

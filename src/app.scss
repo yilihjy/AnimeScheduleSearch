@@ -1,3 +1,4 @@
+@import "./custom-theme.scss";
 @import "~taro-ui/dist/style/components/flex.scss";
 @import "~taro-ui/dist/style/components/nav-bar.scss";
 @import "~taro-ui/dist/style/components/icon.scss";
@@ -10,6 +11,8 @@
 @import "~taro-ui/dist/style/components/card.scss";
 @import "~taro-ui/dist/style/components/accordion.scss";
 @import '~taro-ui/dist/style/components/loading.scss';
+@import "~taro-ui/dist/style/components/pagination.scss";
+
 
 
 .text-center{

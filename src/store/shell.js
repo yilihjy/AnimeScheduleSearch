@@ -30,7 +30,8 @@ class shellStore {
                 return
             }
         }
-        
+        this.title = name
+        this.name = name
     }
 
     @action.bound
