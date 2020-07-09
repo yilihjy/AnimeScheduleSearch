@@ -1,7 +1,9 @@
 import Taro from '@tarojs/taro'
 import { observable, action } from 'mobx'
 import md5 from 'blueimp-md5'
+import bangumiData from 'bangumi-data'
 import { dateStringToMonthString, dateStringToYearString} from '../utils/dateTools'
+
 
 export class DataStore {
     @observable yearKey = []
@@ -18,11 +20,24 @@ export class DataStore {
 
     @action.bound
     initData(data,fn) {
+        const lastSave = Taro.getStorageSync('latest-save')
+        if(lastSave && Math.abs((new Date()).valueOf()-lastSave)<86400000){
+            this.initDataFromCache(fn,true)
+            console.log('基础数据无需更新')
+            return
+        }
         this.siteMeta = data.siteMeta
+        Taro.setStorage({
+            key : 'siteMeta',
+            data : data.siteMeta
+        })
         const yearKey = []
         const typeKey = []
         const yearMonthMap = {}
         const yearMonthKey = {}
+        let playingList = []
+        let latestMovieList = []
+        let latestOVAList = []
 
         data.items.forEach((element) => {
             element.id = md5(element.title)
@@ -43,22 +58,23 @@ export class DataStore {
             if (!typeKey.includes(element.type)) {
                 typeKey.push(element.type)
             }
+            
             if(element.type == 'tv' || element.type == 'web') {
                 const playDate = new Date(element.begin)
                 if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=100*86400000) {
-                    this.playingList.push(element)
+                    playingList.push(element)
                 }
             }
             if(element.type == 'movie') {
                 const playDate = new Date(element.begin)
                 if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=365*86400000) {
-                    this.latestMovieList.push(element)
+                    latestMovieList.push(element)
                 }
             }
             if(element.type == 'ova') {
                 const playDate = new Date(element.begin)
                 if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=365*86400000) {
-                    this.latestOVAList.push(element)
+                    latestOVAList.push(element)
                 }
             }
             if(element.sites) {
@@ -70,12 +86,39 @@ export class DataStore {
             }
 
         })
-        this.playingList = this.playingList.sort(DataStore.compareBegin)
-        this.latestMovieList = this.latestMovieList.sort(DataStore.compareBegin)
-        this.latestOVAList = this.latestOVAList.sort(DataStore.compareBegin)
+        playingList = playingList.sort(DataStore.compareBegin).slice(0,50)
+        this.playingList = playingList
+        Taro.setStorage({
+            key : 'playingList',
+            data : playingList
+        })
+        latestMovieList = latestMovieList.sort(DataStore.compareBegin).slice(0,10)
+        this.latestMovieList = latestMovieList
+        Taro.setStorage({
+            key : 'latestMovieList',
+            data : latestMovieList
+        })
+        latestOVAList = latestOVAList.sort(DataStore.compareBegin).slice(0,10)
+        this.latestOVAList = latestOVAList
+        Taro.setStorage({
+            key : 'latestOVAList',
+            data : latestOVAList
+        })
         this.yearKey = yearKey
         this.typeKey = typeKey
         this.yearMonthKey = yearMonthKey
+        Taro.setStorage({
+            key : 'yearKey',
+            data : yearKey
+        })
+        Taro.setStorage({
+            key : 'typeKey',
+            data : typeKey
+        })
+        Taro.setStorage({
+            key : 'yearMonthKey',
+            data : yearMonthKey
+        })
         
         for(let y = 0; y < yearKey.length;y++) {
             const year = yearKey[y]
@@ -84,7 +127,48 @@ export class DataStore {
                 data : yearMonthMap[year]
             })
         }
+        Taro.setStorage({
+            key : `latest-save`,
+            data : (new Date()).valueOf()
+        })
         fn()
+    }
+
+    @action.bound
+    initDataFromCache(fn,ignoreLastsave) {
+        const lastSave = Taro.getStorageSync('latest-save')
+        if(lastSave) {
+            console.log('initDataFromCache')
+            this.siteMeta = Taro.getStorageSync('siteMeta')
+            this.yearKey = Taro.getStorageSync('yearKey')
+            this.typeKey = Taro.getStorageSync('typeKey')
+            this.yearMonthKey = Taro.getStorageSync('yearMonthKey')
+            this.playingList = Taro.getStorageSync('playingList')
+            this.latestMovieList = Taro.getStorageSync('latestMovieList')
+            this.latestOVAList = Taro.getStorageSync('latestOVAList')
+            // const items = []
+            fn(true)
+        } else {
+            fn(false)
+        }
+        if(!ignoreLastsave) {
+            Taro.setStorage({
+                key : `latest-save`,
+                data : 1
+            })
+        }
+        
+    }
+
+    @action.bound
+    initDataFromLocal(fn) {
+        Taro.setStorage({
+            key : `latest-save`,
+            data : 1
+        })
+        this.initData(bangumiData,()=>{
+            fn()
+        })
     }
 
     /**
@@ -93,7 +177,7 @@ export class DataStore {
      * @param {Function} fn 初始化完成之后调用
      */
     @action.bound
-    initCalendarData(data, fn) {
+    initCalendarData(data) {
         const calendarData = []
         data.forEach(value=>{
             if(value.weekday.id == 7) {
@@ -103,8 +187,23 @@ export class DataStore {
             }
         })
         this.calendarData = calendarData
+        Taro.setStorage({
+            key : `calendarData`,
+            data : calendarData
+        })
         this.hasCalendarData = true
-        fn()
+    }
+
+    @action.bound
+    initCalendarDataFromCache(fn) {
+        const calendarData = Taro.getStorageSync('calendarData')
+        if(calendarData) {
+            this.calendarData = calendarData
+            this.hasCalendarData = true
+            fn(true)
+        }else {
+            fn(false)
+        }
     }
 
     @action.bound

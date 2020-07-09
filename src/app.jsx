@@ -58,6 +58,26 @@ class App extends Component {
       })
       
     } catch (error) {
+      DataStore.clearFilterCache()
+      dataStore.initDataFromCache((result)=>{
+        if(result) {
+          Taro.showToast({
+            title: '获取最新基础数据失败，使用缓存数据',
+            icon:'none',
+            duration: 2000
+          })
+          shellStore.hideLoading()
+        }else {
+          dataStore.initDataFromLocal(()=>{
+            Taro.showToast({
+              title: '获取最新基础数据失败，使用本地数据',
+              icon:'none',
+              duration: 1000
+            })
+            shellStore.hideLoading()
+          })
+        }
+      })
       console.log(error)
     }
   }

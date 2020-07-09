@@ -1,8 +1,9 @@
 /* eslint-disable react/sort-comp */
 import Taro, { Component } from '@tarojs/taro'
 import { View,Text } from '@tarojs/components'
-import {  AtAccordion, AtTabBar, AtTabs, AtTabsPane, AtList, AtListItem  } from "taro-ui"
+import {  AtAccordion, AtTabBar, AtTabs, AtTabsPane, AtList, AtListItem, AtActivityIndicator, AtButton    } from "taro-ui"
 import { observer, inject } from '@tarojs/mobx'
+import _isEmpty from 'lodash/isEmpty'
 import Shell from '../../components/shell'
 import Loading from '../../components/loading'
 import ItemList from '../../components/ItemList'
@@ -27,7 +28,8 @@ class Index extends Component {
       OVAOpen: false,
       movieOpen: false,
       atTabBarCurrent: 0,
-      atTabsCurrent: (new Date()).getDay()
+      atTabsCurrent: (new Date()).getDay(),
+      showCalendarFailButton: false
     }
   }
 
@@ -42,13 +44,27 @@ class Index extends Component {
   }
 
   async requestData() {
-    const { dataStore: {hasCalendarData, initCalendarData}} = this.props
+    const { dataStore: {hasCalendarData, initCalendarData, initCalendarDataFromCache}} = this.props
     if(!hasCalendarData) {
-      const res = await Taro.request({
-        url: 'https://api.bgm.tv/calendar'
-      })
-      initCalendarData(res.data,()=>{
-      })
+      try {
+        const res = await Taro.request({
+          url: 'https://api.bgm.tv/calendar'
+        })
+        initCalendarData(res.data)
+      } catch (error) {
+        initCalendarDataFromCache((result)=>{
+          if(!result) {
+            Taro.showToast({
+              title: '获取每日放送数据失败',
+              icon:'none',
+              duration: 2000
+            })
+            this.setState({
+              showCalendarFailButton: true
+            })
+          }
+        })
+      }
     }
   }
 
@@ -95,8 +111,7 @@ class Index extends Component {
     const showLatestOVAList = latestOVAList.slice()
     const showLatestMovieList = latestMovieList.slice()
     const showCalendarData = calendarData.slice()
-    const atTabBarCurrent = this.state.atTabBarCurrent
-    const atTabsCurrent = this.state.atTabsCurrent
+    const {showCalendarFailButton,atTabBarCurrent,atTabsCurrent} = this.state
     return (
       <View >
         <Shell className='at-rol' />
@@ -164,6 +179,11 @@ class Index extends Component {
               )
             })}
           </AtTabs>
+          {_isEmpty(showCalendarData) && 
+          <View className='activity-container'>
+            {!showCalendarFailButton &&<AtActivityIndicator content='加载中...' mode='center' />}
+            {showCalendarFailButton && <View className='reload-button'><AtButton onClick={this.requestData.bind(this)}  type='primary' size='small' full={false}>重新加载</AtButton></View>}
+          </View>}
           <View className='tip'><Text >提示：部分日本动画播出时间为当地时间，可能与国内平台播出时间相差一天，可以进入详情页查看国内平台播出时间</Text></View>
         </View>)}
         <AtTabBar

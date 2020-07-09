@@ -6,6 +6,7 @@ import { observer, inject } from '@tarojs/mobx'
 import _isObject from 'lodash/isObject'
 import _isArray from 'lodash/isArray'
 import _forOwn from 'lodash/forOwn'
+import _isEmpty from 'lodash/isEmpty'
 import Shell from '../../components/shell'
 import  { DataStore } from '../../store/data'
 import { formatDate} from '../../utils/dateTools'
@@ -556,7 +557,7 @@ class Detail extends Component {
                   </AtAccordion>
                   )}
                 </View>}
-                {!extraData && <View style='font-size:18px;text-align:center;height:100px;'>抱歉，没有更多内容</View>}
+                {_isEmpty(extraData) && <View style='font-size:18px;text-align:center;height:100px;'>没有更多内容</View>}
               </AtTabsPane>
             </AtTabs>
             

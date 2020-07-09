@@ -47,6 +47,7 @@
 		"@tarojs/taro-tt": "2.2.10",
 		"@tarojs/taro-weapp": "2.2.10",
 		"babel-runtime": "^6.26.0",
+		"bangumi-data": "^0.3.30",
 		"blueimp-md5": "^2.16.0",
 		"lodash": "^4.17.15",
 		"mobx": "4.8.0",
