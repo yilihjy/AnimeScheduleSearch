@@ -13,7 +13,7 @@
 [bangumi-data](https://github.com/bangumi-data/bangumi-data)
 
 ## 框架
-[taro](https://github.com/nervjs/taro)
+[Taro](https://github.com/nervjs/taro)
 
 ## 协议
 [MIT](./LICENSE)

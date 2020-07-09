@@ -1,9 +1,61 @@
 .detail{
     word-wrap:break-word;
     padding-bottom: 25px;
-    padding-top: 25px;
+    // padding-top: 25px;
 }
 
 .item_title{
     color: gray;
+}
+
+.coever{
+    text-align: center;
+    width: 100%;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.modal-image{
+    text-align: center;
+    width: 100%;
+}
+
+.pagination{
+    padding-top: 15px;
+}
+
+.bg-img{
+    width: 100%;
+    height: 350px;
+    filter:blur(5px);
+}
+
+.bg-img-mask{
+    width: 100%;
+    height: 350px;
+    background-color: rgba($color: #000000, $alpha: 0.3);
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.top-img{
+    width: 25%;
+    height: 75%;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.main-title{
+    width: 60%;
+    font-size: 60px;
+    font-weight: bolder;
+    color: white;
+    position: absolute;
+    top: 35px;
+    left: 30%;
+    word-break: break-all;
+    text-align: left;
 }

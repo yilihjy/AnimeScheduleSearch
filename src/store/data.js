@@ -13,6 +13,8 @@ export class DataStore {
     @observable playingList = []
     @observable latestMovieList = []
     @observable latestOVAList = []
+    @observable hasCalendarData = false
+    @observable calendarData = []
 
     @action.bound
     initData(data,fn) {
@@ -41,7 +43,7 @@ export class DataStore {
             if (!typeKey.includes(element.type)) {
                 typeKey.push(element.type)
             }
-            if((element.type == 'tv' || element.type == 'web' ) && element.end == '') {
+            if(element.type == 'tv' || element.type == 'web') {
                 const playDate = new Date(element.begin)
                 if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=100*86400000) {
                     this.playingList.push(element)
@@ -49,16 +51,24 @@ export class DataStore {
             }
             if(element.type == 'movie') {
                 const playDate = new Date(element.begin)
-                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=3*7776000000) {
+                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=365*86400000) {
                     this.latestMovieList.push(element)
                 }
             }
             if(element.type == 'ova') {
                 const playDate = new Date(element.begin)
-                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=3*7776000000) {
+                if(Math.abs(playDate.valueOf()-(new Date()).valueOf())<=365*86400000) {
                     this.latestOVAList.push(element)
                 }
             }
+            if(element.sites) {
+                element.sites.forEach(value=>{
+                    if(value.site=='bangumi') {
+                        element.bangumiID = value.id
+                    }
+                })
+            }
+
         })
         this.playingList = this.playingList.sort(DataStore.compareBegin)
         this.latestMovieList = this.latestMovieList.sort(DataStore.compareBegin)
@@ -74,6 +84,26 @@ export class DataStore {
                 data : yearMonthMap[year]
             })
         }
+        fn()
+    }
+
+    /**
+     * 初始化每日放送表的数据
+     * @param {Array} data 一个数组
+     * @param {Function} fn 初始化完成之后调用
+     */
+    @action.bound
+    initCalendarData(data, fn) {
+        const calendarData = []
+        data.forEach(value=>{
+            if(value.weekday.id == 7) {
+                calendarData[0] = value.items
+            }else {
+                calendarData[value.weekday.id] = value.items
+            }
+        })
+        this.calendarData = calendarData
+        this.hasCalendarData = true
         fn()
     }
 

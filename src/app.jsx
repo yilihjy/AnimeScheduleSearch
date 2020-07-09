@@ -48,13 +48,18 @@ class App extends Component {
 
   async requestData() {
     shellStore.showLoading()
-    const res = await Taro.request({
-      url: 'https://cdn.jsdelivr.net/npm/bangumi-data@0.3/dist/data.json'
-    })
-    DataStore.clearFilterCache()
-    dataStore.initData(res.data,()=>{
-      shellStore.hideLoading()
-    })
+    try {
+      const res = await Taro.request({
+        url: 'https://cdn.jsdelivr.net/npm/bangumi-data@0.3/dist/data.json'
+      })
+      DataStore.clearFilterCache()
+      dataStore.initData(res.data,()=>{
+        shellStore.hideLoading()
+      })
+      
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   
