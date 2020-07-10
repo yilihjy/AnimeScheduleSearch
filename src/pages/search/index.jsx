@@ -157,6 +157,7 @@ class Search extends Component {
           note={this.showNote(value)}
           extraText='放送详情'
           arrow='right'
+          thumb={value.image}
           onClick={this.onItemClick.bind(this, value)}
         />
       )

@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { observable, action } from 'mobx'
 import md5 from 'blueimp-md5'
-import bangumiData from 'bangumi-data'
+import bangumiData from 'anime-sachedule-search-data/dist/data.json'
 import { dateStringToMonthString, dateStringToYearString} from '../utils/dateTools'
 
 
@@ -17,20 +17,23 @@ export class DataStore {
     @observable latestOVAList = []
     @observable hasCalendarData = false
     @observable calendarData = []
+    @observable datainitFinished = false
+
+    static checkCache() {
+        const lastSave = Taro.getStorageSync('latest-save')
+        return lastSave && Math.abs((new Date()).valueOf()-lastSave)<86400000
+    }
 
     @action.bound
     initData(data,fn) {
-        const lastSave = Taro.getStorageSync('latest-save')
-        if(lastSave && Math.abs((new Date()).valueOf()-lastSave)<86400000){
-            this.initDataFromCache(fn,true)
-            console.log('基础数据无需更新')
-            return
-        }
         this.siteMeta = data.siteMeta
-        Taro.setStorage({
-            key : 'siteMeta',
-            data : data.siteMeta
-        })
+        try {
+            Taro.setStorageSync('siteMeta', data.siteMeta)
+          } catch (e) { console.log(e) }
+        // Taro.setStorage({
+        //     key : 'siteMeta',
+        //     data : data.siteMeta
+        // })
         const yearKey = []
         const typeKey = []
         const yearMonthMap = {}
@@ -88,49 +91,75 @@ export class DataStore {
         })
         playingList = playingList.sort(DataStore.compareBegin).slice(0,50)
         this.playingList = playingList
-        Taro.setStorage({
-            key : 'playingList',
-            data : playingList
-        })
+        // Taro.setStorage({
+        //     key : 'playingList',
+        //     data : playingList
+        // })
+        try {
+            Taro.setStorageSync('playingList', playingList)
+          } catch (e) { console.log(e) }
         latestMovieList = latestMovieList.sort(DataStore.compareBegin).slice(0,10)
         this.latestMovieList = latestMovieList
-        Taro.setStorage({
-            key : 'latestMovieList',
-            data : latestMovieList
-        })
+        // Taro.setStorage({
+        //     key : 'latestMovieList',
+        //     data : latestMovieList
+        // })
+        try {
+            Taro.setStorageSync('latestMovieList', latestMovieList)
+          } catch (e) { console.log(e) }
         latestOVAList = latestOVAList.sort(DataStore.compareBegin).slice(0,10)
         this.latestOVAList = latestOVAList
-        Taro.setStorage({
-            key : 'latestOVAList',
-            data : latestOVAList
-        })
+        // Taro.setStorage({
+        //     key : 'latestOVAList',
+        //     data : latestOVAList
+        // })
+        try {
+            Taro.setStorageSync('latestOVAList', latestOVAList)
+          } catch (e) { console.log(e) }
         this.yearKey = yearKey
         this.typeKey = typeKey
         this.yearMonthKey = yearMonthKey
-        Taro.setStorage({
-            key : 'yearKey',
-            data : yearKey
-        })
-        Taro.setStorage({
-            key : 'typeKey',
-            data : typeKey
-        })
-        Taro.setStorage({
-            key : 'yearMonthKey',
-            data : yearMonthKey
-        })
+        // Taro.setStorage({
+        //     key : 'yearKey',
+        //     data : yearKey
+        // })
+        try {
+            Taro.setStorageSync('yearKey', yearKey)
+          } catch (e) { console.log(e) }
+        // Taro.setStorage({
+        //     key : 'typeKey',
+        //     data : typeKey
+        // })
+        try {
+            Taro.setStorageSync('typeKey', typeKey)
+          } catch (e) { console.log(e) }
+        // Taro.setStorage({
+        //     key : 'yearMonthKey',
+        //     data : yearMonthKey
+        // })
+        try {
+            Taro.setStorageSync('yearMonthKey', yearMonthKey)
+          } catch (e) { console.log(e) }
         
         for(let y = 0; y < yearKey.length;y++) {
             const year = yearKey[y]
-            Taro.setStorage({
-                key : `${year}`,
-                data : yearMonthMap[year]
-            })
+            // Taro.setStorage({
+            //     key : `${year}`,
+            //     data : yearMonthMap[year]
+            // })
+            try {
+                Taro.setStorageSync(`${year}`,  yearMonthMap[year])
+              } catch (e) { console.log(e) }
         }
-        Taro.setStorage({
-            key : `latest-save`,
-            data : (new Date()).valueOf()
-        })
+        // Taro.setStorage({
+        //     key : `latest-save`,
+        //     data : (new Date()).valueOf()
+        // })
+        try {
+            Taro.setStorageSync( `latest-save`,  (new Date()).valueOf())
+          } catch (e) { console.log(e) }
+        this.initCalendarData(data.calendar)
+        this.datainitFinished = true
         fn()
     }
 
@@ -138,7 +167,6 @@ export class DataStore {
     initDataFromCache(fn,ignoreLastsave) {
         const lastSave = Taro.getStorageSync('latest-save')
         if(lastSave) {
-            console.log('initDataFromCache')
             this.siteMeta = Taro.getStorageSync('siteMeta')
             this.yearKey = Taro.getStorageSync('yearKey')
             this.typeKey = Taro.getStorageSync('typeKey')
@@ -146,26 +174,32 @@ export class DataStore {
             this.playingList = Taro.getStorageSync('playingList')
             this.latestMovieList = Taro.getStorageSync('latestMovieList')
             this.latestOVAList = Taro.getStorageSync('latestOVAList')
-            // const items = []
-            fn(true)
+            this.datainitFinished = true
+            this.initCalendarDataFromCache(fn)
         } else {
             fn(false)
         }
         if(!ignoreLastsave) {
-            Taro.setStorage({
-                key : `latest-save`,
-                data : 1
-            })
+            // Taro.setStorage({
+            //     key : `latest-save`,
+            //     data : 1
+            // })
+            try {
+                Taro.setStorageSync( `latest-save`, 1)
+              } catch (e) { console.log(e) }
         }
         
     }
 
     @action.bound
     initDataFromLocal(fn) {
-        Taro.setStorage({
-            key : `latest-save`,
-            data : 1
-        })
+        // Taro.setStorage({
+        //     key : `latest-save`,
+        //     data : 1
+        // })
+        try {
+            Taro.setStorageSync( `latest-save`, 1)
+          } catch (e) { console.log(e) }
         this.initData(bangumiData,()=>{
             fn()
         })
@@ -187,10 +221,13 @@ export class DataStore {
             }
         })
         this.calendarData = calendarData
-        Taro.setStorage({
-            key : `calendarData`,
-            data : calendarData
-        })
+        // Taro.setStorage({
+        //     key : `calendarData`,
+        //     data : calendarData
+        // })
+        try {
+            Taro.setStorageSync( 'calendarData', calendarData)
+          } catch (e) { console.log(e) }
         this.hasCalendarData = true
     }
 
@@ -315,13 +352,20 @@ export class DataStore {
     }
 
     static saveFilterCache(data,keyword) {
-        Taro.setStorage({
-            key: 'filterCache',
-            data: {
+        // Taro.setStorage({
+        //     key: 'filterCache',
+        //     data: {
+        //         keyword:keyword,
+        //         data:data
+        //     }
+        // })
+        try {
+            Taro.setStorageSync('filterCache', {
                 keyword:keyword,
                 data:data
-            }
-        })
+            })
+          } catch (e) { console.log(e) }
+        
     }
 
     static clearFilterCache() {

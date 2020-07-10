@@ -48,38 +48,46 @@ class App extends Component {
 
   async requestData() {
     shellStore.showLoading()
-    try {
-      const res = await Taro.request({
-        url: 'https://cdn.jsdelivr.net/npm/bangumi-data@0.3/dist/data.json'
-      })
-      DataStore.clearFilterCache()
-      dataStore.initData(res.data,()=>{
+    if(DataStore.checkCache()) {
+      dataStore.initDataFromCache(()=>{
         shellStore.hideLoading()
-      })
-      
-    } catch (error) {
-      DataStore.clearFilterCache()
-      dataStore.initDataFromCache((result)=>{
-        if(result) {
-          Taro.showToast({
-            title: '获取最新基础数据失败，使用缓存数据',
-            icon:'none',
-            duration: 2000
-          })
+        console.log('基础数据无需更新')
+      },true)
+    } else {
+      try {
+        const res = await Taro.request({
+          url: 'https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/data.json'
+        })
+        DataStore.clearFilterCache()
+        dataStore.initData(res.data,()=>{
           shellStore.hideLoading()
-        }else {
-          dataStore.initDataFromLocal(()=>{
+        })
+        
+      } catch (error) {
+        DataStore.clearFilterCache()
+        dataStore.initDataFromCache((result)=>{
+          if(result) {
             Taro.showToast({
-              title: '获取最新基础数据失败，使用本地数据',
+              title: '获取最新基础数据失败，使用缓存数据',
               icon:'none',
-              duration: 1000
+              duration: 2000
             })
             shellStore.hideLoading()
-          })
-        }
-      })
-      console.log(error)
+          }else {
+            dataStore.initDataFromLocal(()=>{
+              Taro.showToast({
+                title: '获取最新基础数据失败，使用本地数据',
+                icon:'none',
+                duration: 1000
+              })
+              shellStore.hideLoading()
+            })
+          }
+        })
+        console.log(error)
+      }
     }
+   
   }
 
   

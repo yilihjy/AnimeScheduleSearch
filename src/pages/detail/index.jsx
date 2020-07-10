@@ -2,6 +2,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image,Button } from '@tarojs/components'
 import { AtCard, AtTabs, AtTabsPane, AtRate, AtAccordion,AtList, AtListItem ,AtPagination, AtModal, AtModalHeader, AtModalContent, AtModalAction } from "taro-ui"
+import { when } from 'mobx'
 import { observer, inject } from '@tarojs/mobx'
 import _isObject from 'lodash/isObject'
 import _isArray from 'lodash/isArray'
@@ -48,19 +49,32 @@ class Detail extends Component {
       modalOpen: false,
       modalDate:{},
       modalType:'',
-      noData: false
+      noData: false,
+      // queryFail: false
     } 
   }
 
   componentWillMount () {
     const params = this.$router.params
-    this.queryData(params.id, params.year, params.month,params.bgmid)
+    Taro.showLoading({
+      title: '加载中',
+    })
+    when(()=>{
+      const {dataStore:{datainitFinished}} = this.props
+      return datainitFinished
+    },()=>{
+      this.queryData(params.id, params.year, params.month,params.bgmid)
+    })
+    
   }
 
   componentDidShow() {
     const {shellStore} = this.props
     shellStore.whenInitPage('detail')
     this.filterSites()
+    Taro.showShareMenu({
+      withShareTicket: false
+    })
   }
 
   queryData(id, year, month, bgmid) {
@@ -103,9 +117,13 @@ class Detail extends Component {
           noData: true
         })
       }
+      // this.setState({queryFail:false})
+      Taro.hideLoading()
     } catch (error) {
-      console.log(id, year, month)
+      // this.setState({queryFail:true})
       console.log(error)
+    }finally{
+      Taro.hideLoading()
     }
   }
 
@@ -113,7 +131,7 @@ class Detail extends Component {
     try {
       const subject = id || this.state.bgmid
       const res = await Taro.request({
-        url: `https://api.bgm.tv/subject/${subject}?responseGroup=large`
+        url: `https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/subject/${subject}.json`
       })
       let imageUrl
       try {
@@ -237,7 +255,6 @@ class Detail extends Component {
   }
 
   openModal(type,data) {
-    console.log(type,data)
     this.setState({
       modalOpen: true,
       modalType:type,
@@ -331,6 +348,16 @@ class Detail extends Component {
 
   render () {
     const {bangumiData,extraData,epPageStart,epPageCurrent,epPageSize}  = this.state
+    const { dataStore:{datainitFinished}} = this.props
+    // if(queryFail) {
+    //   Taro.showLoading({
+    //     title: '加载中',
+    //   })
+    //   setTimeout(() => {
+    //     const params = this.$router.params
+    //     this.queryData(params.id, params.year, params.month,params.bgmid)
+    //   }, 1000)
+    // }
     // const extraData =   this.state.extraData
     // const epPageStart = this.state.epPageStart
     // const epPageCurrent = this.state.epPageCurrent
@@ -338,7 +365,7 @@ class Detail extends Component {
     return (
       <View className='detail'>
         <Shell className='at-rol' />
-        <View className='at-rol'>
+        {datainitFinished && (<View className='at-rol'>
           {this.state.image &&
           <View className='coever'>
             <Image className='bg-img' mode='aspectFill' src={this.state.image} />
@@ -564,6 +591,7 @@ class Detail extends Component {
            <Text>\n</Text>
           </AtCard>
         </View>
+        )}
         {this.buildModal()}
       </View>
     )

@@ -34,13 +34,15 @@ class Index extends Component {
   }
 
   componentWillMount() {
-    this.requestData()
+    // this.requestData()
   }
 
   componentDidShow() {
     const {shellStore} = this.props
     shellStore.whenInitPage('index')
-
+    Taro.showShareMenu({
+      withShareTicket: false
+    })
   }
 
   async requestData() {
@@ -48,7 +50,7 @@ class Index extends Component {
     if(!hasCalendarData) {
       try {
         const res = await Taro.request({
-          url: 'https://api.bgm.tv/calendar'
+          url: 'https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/calendar.json'
         })
         initCalendarData(res.data)
       } catch (error) {
@@ -90,7 +92,6 @@ class Index extends Component {
     this.setState({
       atTabBarCurrent: value
     })
-    console.log(value)
   }
 
   onAtTabsClick (value) {

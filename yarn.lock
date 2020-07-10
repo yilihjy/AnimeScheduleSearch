@@ -1644,6 +1644,11 @@ amdefine@>=0.0.4:
   resolved "https://registry.npm.taobao.org/amdefine/download/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+anime-sachedule-search-data@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/anime-sachedule-search-data/-/anime-sachedule-search-data-0.1.1.tgz#192b15d0b01bde397d68cd1c87c6bfd65f57e007"
+  integrity sha512-f5v5V5BWVyxcCrhNPN5Ky+poUgx+5FVN+PhzCOh0kQ3EnXHJopXDQhV5Te+MVo2D53dz2X4qyP9kD3X5oajwog==
+
 ansi-colors@^3.0.0:
   version "3.2.4"
   resolved "https://registry.npm.taobao.org/ansi-colors/download/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
@@ -2724,11 +2729,6 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/balanced-match/download/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
-
-bangumi-data@^0.3.30:
-  version "0.3.30"
-  resolved "https://registry.npm.taobao.org/bangumi-data/download/bangumi-data-0.3.30.tgz#028cdc73cde2216c30b9ec980aa38497bddd1019"
-  integrity sha1-Aozcc83iIWwwueyYCqOEl73dEBk=
 
 base64-js@^1.0.2, base64-js@^1.3.0:
   version "1.3.1"

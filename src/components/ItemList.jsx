@@ -59,6 +59,7 @@ class ItemList extends Component {
               title={title} 
               extraText='详细信息' 
               arrow='right'
+              thumb={value.image}
               note={`开播时间${formatDate(value.begin, true)}`}
             />)
           })

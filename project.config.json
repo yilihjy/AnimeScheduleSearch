@@ -4,7 +4,7 @@
 	"description": "番剧放送速查小程序",
 	"appid": "wx540b80d791f4a105",
 	"setting": {
-		"urlCheck": false,
+		"urlCheck": true,
 		"es6": false,
 		"postcss": false,
 		"preloadBackgroundData": false,
@@ -30,5 +30,37 @@
 	"compileType": "miniprogram",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
-	"condition": {}
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "pages/detail/index",
+					"pathName": "pages/detail/index",
+					"query": "bgmid=277954&year=2020&month=07&__key_=15943765029831",
+					"scene": 1007
+				}
+			]
+		}
+	}
 }
