@@ -51,11 +51,11 @@ class About extends Component {
           className='about-card'
           title='更新日志'
         >
-          <Text>v1.1.0(2020-7-10)\n</Text>
+          <Text>v1.1(2020-7-10)\n</Text>
           <Text>1.首页增加每日放送表\n</Text>
           <Text>2.增加番剧详情页展示的内容\n</Text>
           <Text>\n</Text>
-          <Text>v1.0.0(2020-7-8)\n</Text>
+          <Text>v1.0(2020-7-8)\n</Text>
           <Text>1.小程序首页\n</Text>
           <Text>2.搜索功能\n</Text>
           <Text>3.历史查询\n</Text>

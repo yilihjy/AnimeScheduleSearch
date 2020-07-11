@@ -22,7 +22,7 @@ class ClipboardURL extends Component {
 
   render () {
     return (
-      <Text onClick={this.onClickURL.bind(this)}>
+      <Text className='clip' onClick={this.onClickURL.bind(this)}>
           {this.state.text}
       </Text>
     )

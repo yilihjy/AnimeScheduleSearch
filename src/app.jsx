@@ -74,17 +74,17 @@ class App extends Component {
             })
             shellStore.hideLoading()
           }else {
-            dataStore.initDataFromLocal(()=>{
-              Taro.showToast({
-                title: '获取最新基础数据失败，使用本地数据',
-                icon:'none',
-                duration: 1000
-              })
-              shellStore.hideLoading()
+            Taro.showToast({
+              title: '获取最新基础数据失败',
+              icon:'none',
+              duration: 3000
             })
+            shellStore.hideLoading()
+            dataStore.allowRetry()
           }
         })
-        console.log(error)
+        shellStore.hideLoading()
+        dataStore.allowRetry()
       }
     }
    

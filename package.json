@@ -25,7 +25,8 @@
 		"dev:rn": "npm run build:rn -- --watch",
 		"dev:qq": "npm run build:qq -- --watch",
 		"dev:quickapp": "npm run build:quickapp -- --watch",
-		"update": "taro update self && taro update project",
+		"update:taro": "taro update self && taro update project",
+		"update:data": "yarn upgrade  anime-sachedule-search-data",
 		"lint": "eslint --fix src/**/**.js src/**/**.jsx"
 	},
 	"author": "",

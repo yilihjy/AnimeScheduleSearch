@@ -1,7 +1,7 @@
 /* eslint-disable react/sort-comp */
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image,Button } from '@tarojs/components'
-import { AtCard, AtTabs, AtTabsPane, AtRate, AtAccordion,AtList, AtListItem ,AtPagination, AtModal, AtModalHeader, AtModalContent, AtModalAction } from "taro-ui"
+import { AtCard, AtTabs, AtTabsPane, AtRate, AtAccordion,AtList, AtListItem ,AtPagination, AtModal, AtModalHeader, AtModalContent, AtModalAction ,AtButton} from "taro-ui"
 import { when } from 'mobx'
 import { observer, inject } from '@tarojs/mobx'
 import _isObject from 'lodash/isObject'
@@ -12,6 +12,9 @@ import Shell from '../../components/shell'
 import  { DataStore } from '../../store/data'
 import { formatDate} from '../../utils/dateTools'
 import ClipboardURL from '../../components/clipboardURL'
+import checkImg from '../../utils/checkImg'
+import Loading from '../../components/loading'
+
 
 
 import './index.scss'
@@ -50,20 +53,20 @@ class Detail extends Component {
       modalDate:{},
       modalType:'',
       noData: false,
-      // queryFail: false
     } 
   }
 
   componentWillMount () {
     const params = this.$router.params
-    Taro.showLoading({
-      title: '加载中',
-    })
     when(()=>{
       const {dataStore:{datainitFinished}} = this.props
       return datainitFinished
     },()=>{
-      this.queryData(params.id, params.year, params.month,params.bgmid)
+      if(params.bgmid) {
+        this.queryDataByBgmid(params.bgmid)
+      }else {
+        this.queryData(params.id, params.year, params.month)
+      }
     })
     
   }
@@ -77,24 +80,14 @@ class Detail extends Component {
     })
   }
 
-  queryData(id, year, month, bgmid) {
+  queryDataByBgmid(bgmid,year, month) {
+    this.getExtraData(bgmid)
     const {dataStore} = this.props
     try {
       let result = []
-      if(bgmid) {
-        result = dataStore.filter({year,month}).filter((value)=>{
-          return value.bangumiID == bgmid
-        })
-      }else {
-        result = dataStore.filter({year,month}).filter((value)=>{
-          return value.id == id
-        })
-      }
-      if(result.length==0) {
-        result = dataStore.filter({}).filter((value)=>{
-          return (value.id == id) || (value.bangumiID == bgmid)
-        })
-      }
+      result = dataStore.filter({year,month}).filter((value)=>{
+        return value.bangumiID == bgmid
+      })
       if(result.length == 1) {
         this.setState({
           bangumiData: result[0],
@@ -112,18 +105,45 @@ class Detail extends Component {
           this.getExtraData(result[0].bangumiID)
         }
       } else {
-        this.getExtraData(bgmid)
         this.setState({
           noData: true
         })
       }
-      // this.setState({queryFail:false})
-      Taro.hideLoading()
     } catch (error) {
-      // this.setState({queryFail:true})
       console.log(error)
-    }finally{
-      Taro.hideLoading()
+    }
+  }
+
+  queryData(id, year, month) {
+    const {dataStore} = this.props
+    try {
+      let result = []
+      result = dataStore.filter({year,month}).filter((value)=>{
+        return value.id == id
+      })
+      if(result.length == 1) {
+        this.setState({
+          bangumiData: result[0],
+          noData: false
+        })
+        if(result[0].type=='tv' && result[0].end=='') {
+          this.setState({
+            isNew: true
+          })
+        }
+        if(result[0].bangumiID) {
+          this.setState({
+            bgmid: result[0].bangumiID
+          })
+          this.getExtraData(result[0].bangumiID)
+        }
+      } else {
+        this.setState({
+          noData: true
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -225,14 +245,6 @@ class Detail extends Component {
     })
   }
 
-  checkImg(images,size) {
-    if(images) {
-      if(images[size]){
-        return images[size]
-      }
-    }
-    return ''
-  }
 
   onEpPageChange({type, current}) {
     if(type=='next') {
@@ -268,10 +280,10 @@ class Detail extends Component {
     let modalHeader
     let modalContent
     if(modalType =='ep') {
-      modalHeader = (<AtModalHeader>{modalDate.name_cn || modalDate.name || '尚未公开'}</AtModalHeader>)
+      modalHeader = (<AtModalHeader>{modalDate.name_cn || modalDate.name || '没有详细放送信息'}</AtModalHeader>)
       modalContent = (
         <AtModalContent>
-          <Text>放送日期：{modalDate.airdate}\n</Text>
+          <Text>放送日期：{modalDate.airdate || '无数据'}\n</Text>
           {modalDate.duration && <Text>时长：{modalDate.duration}\n</Text>}
           {modalDate.desc && <Text>{modalDate.desc}</Text>}
         </AtModalContent>
@@ -322,7 +334,7 @@ class Detail extends Component {
       modalContent = (
         <AtModalContent>
           {modalDate.images && (<View className='modal-image'>
-            <Image style='width: 150px;' mode='widthFix' src={this.checkImg(modalDate.images,'medium')}></Image>
+            <Image style='width: 150px;' mode='widthFix' src={checkImg(modalDate.images,'medium')}></Image>
           </View>)}
           {modalDate.role_name && <Text>{modalDate.role_name}\n</Text>}
           {infoList.map(value=>{
@@ -346,25 +358,35 @@ class Detail extends Component {
     )
   }
 
+  async retry() {
+    const {dataStore,shellStore} = this.props
+    shellStore.showLoading()
+    dataStore.disableRetry()
+    try {
+      shellStore
+      const res = await Taro.request({
+        url: 'https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/data.json'
+      })
+      DataStore.clearFilterCache()
+      dataStore.initData(res.data,()=>{
+        const params = this.$router.params
+        this.queryData(params.id, params.year, params.month,params.bgmid)
+        shellStore.hideLoading()
+      })
+    } catch (error) {
+      dataStore.allowRetry()
+      shellStore.hideLoading()
+    }
+  }
+
   render () {
     const {bangumiData,extraData,epPageStart,epPageCurrent,epPageSize}  = this.state
-    const { dataStore:{datainitFinished}} = this.props
-    // if(queryFail) {
-    //   Taro.showLoading({
-    //     title: '加载中',
-    //   })
-    //   setTimeout(() => {
-    //     const params = this.$router.params
-    //     this.queryData(params.id, params.year, params.month,params.bgmid)
-    //   }, 1000)
-    // }
-    // const extraData =   this.state.extraData
-    // const epPageStart = this.state.epPageStart
-    // const epPageCurrent = this.state.epPageCurrent
-    // const epPageSize = this.state.epPageSize
+    const { dataStore:{datainitFinished,canReTry}} = this.props
     return (
       <View className='detail'>
         <Shell className='at-rol' />
+        <Loading />
+        {canReTry  &&<View className='retry'> <AtButton className='reload-button' type='primary' onClick={this.retry.bind(this)}>重新加载数据</AtButton></View>}
         {datainitFinished && (<View className='at-rol'>
           {this.state.image &&
           <View className='coever'>
@@ -377,7 +399,7 @@ class Detail extends Component {
             </View>
             
           </View>}
-          <AtCard
+          {!canReTry &&(<AtCard
             note='小提示:点击网址可以复制到剪切板🍻'
             extra={this.state.isNew?'新番':''}
             title={extraData.name_cn || bangumiData.title || extraData.name}
@@ -397,7 +419,7 @@ class Detail extends Component {
                 {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['zh-Hans']) 
             && <View>
                 <Text>\n</Text>
-                <Text>原始名称：{bangumiData.title}\n</Text>
+                <Text>原始名称：\n{bangumiData.title}\n</Text>
                 <Text>\n</Text>
                 {bangumiData.titleTranslate['zh-Hans'].length>0 && <Text>简体中文译名：\n</Text>}
                 {bangumiData.titleTranslate['zh-Hans'].map(value=>{
@@ -441,8 +463,8 @@ class Detail extends Component {
                   <Text>\n</Text>
               </View>
             }
-            <Text>番剧语言：{DataStore.langCode2Text(bangumiData.lang)}\n</Text>
-            <Text>番剧类型：{bangumiData.type}\n</Text>
+            {bangumiData.lang && <Text>番剧语言：{DataStore.langCode2Text(bangumiData.lang)}\n</Text>}
+            {bangumiData.type && <Text>番剧类型：{bangumiData.type}\n</Text>}
             {bangumiData.officialSite && bangumiData.officialSite.length>0 && 
             (<View>
               <Text>官方网站：</Text> <ClipboardURL text={bangumiData.officialSite} /><Text>\n</Text>
@@ -525,12 +547,12 @@ class Detail extends Component {
                   >
                     <AtList>
                     {extraData.eps.reverse().slice(epPageStart,epPageStart+epPageSize).map((ep)=>{
-                      return <AtListItem 
+                      return (<AtListItem 
                         key={ep.id} 
-                        title={`${ep.sort}: ${ep.name_cn || ep.name || '尚未公开'}`}
-                        note={`放送日期：${ep.airdate}`}
+                        title={`${ep.sort}: ${ep.name_cn || ep.name || '没有详细放送信息'}`}
+                        note={`放送日期：${ep.airdate || '无数据'} `}
                         onClick={this.openModal.bind(this,'ep',ep)}
-                      />
+                      />)
                     })}
                     </AtList>
                     <AtPagination
@@ -555,7 +577,7 @@ class Detail extends Component {
                       return <AtListItem 
                         key={crt.id} 
                         title={crt.name_cn || crt.name}
-                        thumb={this.checkImg(crt.images, 'grid')}
+                        thumb={checkImg(crt.images, 'grid')}
                         note='点击查看详情'
                         onClick={this.openModal.bind(this,'crt',crt)}
                       />
@@ -575,7 +597,7 @@ class Detail extends Component {
                       return <AtListItem 
                         key={staff.id} 
                         title={staff.name_cn || staff.name}
-                        thumb={this.checkImg(staff.images, 'grid')}
+                        thumb={checkImg(staff.images, 'grid')}
                         note='点击查看详情'
                         onClick={this.openModal.bind(this,'staff',staff)}
                       />
@@ -589,7 +611,7 @@ class Detail extends Component {
             </AtTabs>
             
            <Text>\n</Text>
-          </AtCard>
+          </AtCard>)}
         </View>
         )}
         {this.buildModal()}

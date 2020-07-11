@@ -1,13 +1,16 @@
 /* eslint-disable react/sort-comp */
 import Taro, { Component } from '@tarojs/taro'
 import { View,Text } from '@tarojs/components'
-import {  AtAccordion, AtTabBar, AtTabs, AtTabsPane, AtList, AtListItem, AtActivityIndicator, AtButton    } from "taro-ui"
+import {  AtAccordion, AtTabBar, AtTabs, AtTabsPane, AtList, AtListItem,  AtButton    } from "taro-ui"
 import { observer, inject } from '@tarojs/mobx'
-import _isEmpty from 'lodash/isEmpty'
 import Shell from '../../components/shell'
 import Loading from '../../components/loading'
 import ItemList from '../../components/ItemList'
 import {dateStringToMonthString, dateStringToYearString} from '../../utils/dateTools'
+import checkImg from '../../utils/checkImg'
+import {DataStore} from '../../store/data'
+
+
 
 import './index.scss'
 
@@ -28,13 +31,11 @@ class Index extends Component {
       OVAOpen: false,
       movieOpen: false,
       atTabBarCurrent: 0,
-      atTabsCurrent: (new Date()).getDay(),
-      showCalendarFailButton: false
+      atTabsCurrent: (new Date()).getDay()
     }
   }
 
   componentWillMount() {
-    // this.requestData()
   }
 
   componentDidShow() {
@@ -45,30 +46,6 @@ class Index extends Component {
     })
   }
 
-  async requestData() {
-    const { dataStore: {hasCalendarData, initCalendarData, initCalendarDataFromCache}} = this.props
-    if(!hasCalendarData) {
-      try {
-        const res = await Taro.request({
-          url: 'https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/calendar.json'
-        })
-        initCalendarData(res.data)
-      } catch (error) {
-        initCalendarDataFromCache((result)=>{
-          if(!result) {
-            Taro.showToast({
-              title: '获取每日放送数据失败',
-              icon:'none',
-              duration: 2000
-            })
-            this.setState({
-              showCalendarFailButton: true
-            })
-          }
-        })
-      }
-    }
-  }
 
   handlePlayingClick (value) {
     this.setState({
@@ -106,13 +83,32 @@ class Index extends Component {
     })
   }
 
+  async retry() {
+    const {dataStore,shellStore} = this.props
+    shellStore.showLoading()
+    dataStore.disableRetry()
+    try {
+      shellStore
+      const res = await Taro.request({
+        url: 'https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/data.json'
+      })
+      DataStore.clearFilterCache()
+      dataStore.initData(res.data,()=>{
+        shellStore.hideLoading()
+      })
+    } catch (error) {
+      dataStore.allowRetry()
+      shellStore.hideLoading()
+    }
+  }
+
   render () {
-    const { dataStore:{playingList,latestOVAList,latestMovieList,calendarData}} = this.props
+    const { dataStore:{playingList,latestOVAList,latestMovieList,calendarData,canReTry}} = this.props
     const showPlayingList = playingList.slice()
     const showLatestOVAList = latestOVAList.slice()
     const showLatestMovieList = latestMovieList.slice()
     const showCalendarData = calendarData.slice()
-    const {showCalendarFailButton,atTabBarCurrent,atTabsCurrent} = this.state
+    const {atTabBarCurrent,atTabsCurrent} = this.state
     return (
       <View >
         <Shell className='at-rol' />
@@ -166,13 +162,14 @@ class Index extends Component {
             {showCalendarData.map((value,index)=>{
               return (
                 <AtTabsPane key={+index}  current={atTabsCurrent} index={index}>
+                  <View className='tip'><Text >提示：部分日本动画播出时间为当地时间，可能与国内平台播出时间相差一天，可以进入详情页查看国内平台播出时间</Text></View>
                   <AtList >{value.map((item)=>{
                     return (
                     <AtListItem  
                       key={item.id}
                       title={item.name_cn ||item.name}
                       arrow='right'
-                      thumb={item.images.grid}
+                      thumb={checkImg(item.images,'grid')}
                       onClick={this.onCalendarItemClick.bind(this,item)}
                     />)
                   })}</AtList>
@@ -180,12 +177,6 @@ class Index extends Component {
               )
             })}
           </AtTabs>
-          {_isEmpty(showCalendarData) && 
-          <View className='activity-container'>
-            {!showCalendarFailButton &&<AtActivityIndicator content='加载中...' mode='center' />}
-            {showCalendarFailButton && <View className='reload-button'><AtButton onClick={this.requestData.bind(this)}  type='primary' size='small' full={false}>重新加载</AtButton></View>}
-          </View>}
-          <View className='tip'><Text >提示：部分日本动画播出时间为当地时间，可能与国内平台播出时间相差一天，可以进入详情页查看国内平台播出时间</Text></View>
         </View>)}
         <AtTabBar
           fixed
@@ -196,6 +187,7 @@ class Index extends Component {
           onClick={this.onAtTabBarClick.bind(this)}
           current={atTabBarCurrent}
         />
+        {canReTry &&<View className='retry'> <AtButton className='reload-button' type='primary' onClick={this.retry.bind(this)}>重新加载数据</AtButton></View>}
       </View> 
     )
   }

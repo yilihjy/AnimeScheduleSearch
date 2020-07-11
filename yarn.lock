@@ -1645,9 +1645,9 @@ amdefine@>=0.0.4:
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
 anime-sachedule-search-data@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/anime-sachedule-search-data/-/anime-sachedule-search-data-0.1.1.tgz#192b15d0b01bde397d68cd1c87c6bfd65f57e007"
-  integrity sha512-f5v5V5BWVyxcCrhNPN5Ky+poUgx+5FVN+PhzCOh0kQ3EnXHJopXDQhV5Te+MVo2D53dz2X4qyP9kD3X5oajwog==
+  version "0.1.2"
+  resolved "https://registry.npm.taobao.org/anime-sachedule-search-data/download/anime-sachedule-search-data-0.1.2.tgz#89020c24556718c19f82f7b8dce5d03e6a6ec3f3"
+  integrity sha1-iQIMJFVnGMGfgve43OXQPmpuw/M=
 
 ansi-colors@^3.0.0:
   version "3.2.4"
