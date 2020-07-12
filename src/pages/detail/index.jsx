@@ -38,7 +38,6 @@ class Detail extends Component {
       infoList: [],
       downloadList: [],
       foreignList: [],
-      isNew: false,
       bgmid: null,
       extraData: {},
       image:'',
@@ -53,6 +52,7 @@ class Detail extends Component {
       modalDate:{},
       modalType:'',
       noData: false,
+      requestTask: null
     } 
   }
 
@@ -79,6 +79,14 @@ class Detail extends Component {
       withShareTicket: false
     })
   }
+
+  componentWillUnmount() {
+    if(this.state.requestTask) {
+      console.log('abort request')
+      this.state.requestTask.abort()
+    }
+  }
+
 
   onShareAppMessage () {
     const {extraData} = this.state
@@ -109,11 +117,6 @@ class Detail extends Component {
           bangumiData: result[0],
           noData: false
         })
-        if(result[0].type=='tv' && result[0].end=='') {
-          this.setState({
-            isNew: true
-          })
-        }
       } else {
         this.setState({
           noData: true
@@ -136,11 +139,6 @@ class Detail extends Component {
           bangumiData: result[0],
           noData: false
         })
-        if(result[0].type=='tv' && result[0].end=='') {
-          this.setState({
-            isNew: true
-          })
-        }
         if(result[0].bangumiID) {
           this.setState({
             bgmid: result[0].bangumiID
@@ -160,8 +158,12 @@ class Detail extends Component {
   async getExtraData(id) {
     try {
       const subject = id || this.state.bgmid
-      const res = await Taro.request({
+      const requestTask = Taro.request({
         url: `https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/subject/${subject}.json`
+      })
+      const res = await requestTask
+      this.setState({
+        requestTask: requestTask
       })
       let imageUrl
       try {
@@ -420,7 +422,6 @@ class Detail extends Component {
           </View>}
           {!canReTry &&(<AtCard
             note='小提示:点击网址可以复制到剪切板🍻'
-            extra={this.state.isNew?'新番':''}
             title={extraData.name_cn || bangumiData.title || extraData.name}
           > 
             
@@ -437,7 +438,8 @@ class Detail extends Component {
                 {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['zh-Hans']) 
             && <View>
                 <Text className='display-block'  decode >&nbsp;</Text>
-                <Text className='display-block'  decode >原始名称：&nbsp;{bangumiData.title}&nbsp;</Text>
+                <Text className='display-block'  decode >原始名称：&nbsp;</Text>
+                <Text className='display-block'  decode >{bangumiData.title}</Text>
                 <Text className='display-block'  decode >&nbsp;</Text>
                 {bangumiData.titleTranslate['zh-Hans'].length>0 && <Text className='display-block'  decode >简体中文译名：&nbsp;</Text>}
                 {bangumiData.titleTranslate['zh-Hans'].map(value=>{
@@ -487,7 +489,6 @@ class Detail extends Component {
             (<View>
               <Text className='display-block'  decode >官方网站：</Text> <ClipboardURL text={bangumiData.officialSite} /><Text className='display-block'  decode >&nbsp;</Text>
             </View>)}
-            <Text className='display-block'  decode >&nbsp;</Text>
             <Text className='display-block'  decode >{
               {
                 'tv': `开播时间：${formatDate(bangumiData.begin,true)}`,
@@ -540,7 +541,7 @@ class Detail extends Component {
                       </View>)
             })}
                 </View>)}
-                {this.state.noData && <Text className='display-block'  decode >&nbsp;没有更多放送信息&nbsp;</Text>}
+                {this.state.noData && <View><Text className='display-block'  decode >&nbsp;</Text><Text className='display-block'  decode >&nbsp;没有更多放送信息&nbsp;</Text></View>}
               </AtTabsPane>
               <AtTabsPane current={this.state.atTabsCurrent} index={1}>
                 {extraData && 
@@ -553,9 +554,11 @@ class Detail extends Component {
                       <Text className='display-block'  decode >评分人数：{extraData.rating.total}&nbsp;</Text>
                     </View>}
                   <Text className='display-block'  decode >&nbsp;</Text>
-                  {extraData.summary && <Text className='display-block'  decode >剧情简介:&nbsp;</Text>}
-                  <Text className='display-block'  decode >{extraData.summary}</Text>
-                  <Text className='display-block'  decode >&nbsp;</Text>
+                  {extraData.summary && <View>
+                     <Text className='display-block'  decode >剧情简介:&nbsp;</Text>
+                     <Text className='display-block'  decode >{extraData.summary}</Text>
+                     <Text className='display-block'  decode >&nbsp;</Text>
+                  </View>}
                   {(extraData.eps && extraData.eps.length>0) && (
                   <AtAccordion
                     title='分集放送信息'
@@ -567,7 +570,7 @@ class Detail extends Component {
                     {extraData.eps.reverse().slice(epPageStart,epPageStart+epPageSize).map((ep)=>{
                       return (<AtListItem 
                         key={ep.id} 
-                        title={`${ep.sort}: ${ep.name_cn || ep.name || '没有详细放送信息'}`}
+                        title={`${ep.sort}: ${ep.name_cn || ep.name || '没有分集标题信息'}`}
                         note={`放送日期：${ep.airdate || '无数据'} `}
                         onClick={this.openModal.bind(this,'ep',ep)}
                       />)

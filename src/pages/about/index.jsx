@@ -54,7 +54,7 @@ class About extends Component {
           className='about-card'
           title='更新日志'
         >
-          <Text className='display-block'  decode >v1.1(2020-7-10)&nbsp;</Text>
+          <Text className='display-block'  decode >v1.1(2020-7-13)&nbsp;</Text>
           <Text className='display-block'  decode >1.首页增加每日放送表&nbsp;</Text>
           <Text className='display-block'  decode >2.增加番剧详情页展示的内容&nbsp;</Text>
           <Text className='display-block'  decode >&nbsp;</Text>

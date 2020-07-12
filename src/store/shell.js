@@ -49,7 +49,8 @@ class shellStore {
                 this.title = title
                 this.name = this.routes[i].name
                 const url = `/pages/${this.routes[i].name}/index`
-                if(this.isNewPage) {
+                if(this.routes[i].isNewPage) {
+                    console.log('navigateTo')
                     Taro.navigateTo({
                         url: url
                       })
@@ -71,7 +72,8 @@ class shellStore {
                 this.title = this.routes[i].title
                 this.name = name
                 const url = `/pages/${this.routes[i].name}/index`
-                if(this.isNewPage) {
+                if(this.routes[i].isNewPage) {
+                    console.log('navigateTo')
                     Taro.navigateTo({
                         url: url
                       })
