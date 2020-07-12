@@ -172,7 +172,7 @@ class Index extends Component {
             {showCalendarData.map((value,index)=>{
               return (
                 <AtTabsPane key={+index}  current={atTabsCurrent} index={index}>
-                  <View className='tip'><Text >提示：部分日本动画播出时间为当地时间，可能与国内平台播出时间相差一天，可以进入详情页查看国内平台播出时间</Text></View>
+                  <View className='tip'><Text className='display-block'  decode  >提示：部分日本动画播出时间为当地时间，可能与国内平台播出时间相差一天，可以进入详情页查看国内平台播出时间</Text></View>
                   <AtList >{value.map((item)=>{
                     return (
                     <AtListItem  

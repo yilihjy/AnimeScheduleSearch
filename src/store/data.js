@@ -227,7 +227,7 @@ export class DataStore {
         const filterType = condition.type || 'all'
         const filterYear = condition.year || 'all'
         const filterMonth = condition.month || 'all'
-        console.log(`过滤条件：\ntype:${filterType}\nyear:${filterYear}\nmonth:${filterMonth}`)
+        console.log(`过滤条件：&nbsp;type:${filterType}&nbsp;year:${filterYear}&nbsp;month:${filterMonth}`)
         const cache = DataStore.getFilterCache()
         if(cache && condition.keyword && condition.keyword.includes(cache.keyword)) {
             console.info('本次查询有缓存')

@@ -36,7 +36,7 @@ class About extends Component {
           title='开源项目'
           note='点击网址可以复制到剪切板'
         >
-          <Text>源代码地址\n</Text>
+          <Text className='display-block'  decode >源代码地址&nbsp;</Text>
           <ClipboardURL text='https://github.com/yilihjy/AnimeScheduleSearch'></ClipboardURL>
         </AtCard>
         <AtCard 
@@ -44,25 +44,25 @@ class About extends Component {
           title='联系作者'
           note='点击邮箱可以复制到剪切板'
         >
-          <Text>邮箱\n</Text>
+          <Text className='display-block'  decode >邮箱&nbsp;</Text>
           <ClipboardURL text='yilihjy@gmail.com'></ClipboardURL>
-          <Text>\n微信\n</Text>
+          <Text className='display-block'  decode >&nbsp;微信&nbsp;</Text>
           <Image className='ercode' src='../../images/contact.jpg'></Image>
-          <Text>截屏识别二维码添加作者微信，请备注小程序交流\n</Text>
+          <Text className='display-block'  decode >截屏识别二维码添加作者微信，请备注小程序交流&nbsp;</Text>
         </AtCard>
         <AtCard 
           className='about-card'
           title='更新日志'
         >
-          <Text>v1.1(2020-7-10)\n</Text>
-          <Text>1.首页增加每日放送表\n</Text>
-          <Text>2.增加番剧详情页展示的内容\n</Text>
-          <Text>\n</Text>
-          <Text>v1.0(2020-7-8)\n</Text>
-          <Text>1.小程序首页\n</Text>
-          <Text>2.搜索功能\n</Text>
-          <Text>3.历史查询\n</Text>
-          <Text>4.番剧放送详情页\n</Text>
+          <Text className='display-block'  decode >v1.1(2020-7-10)&nbsp;</Text>
+          <Text className='display-block'  decode >1.首页增加每日放送表&nbsp;</Text>
+          <Text className='display-block'  decode >2.增加番剧详情页展示的内容&nbsp;</Text>
+          <Text className='display-block'  decode >&nbsp;</Text>
+          <Text className='display-block'  decode >v1.0(2020-7-8)&nbsp;</Text>
+          <Text className='display-block'  decode >1.小程序首页&nbsp;</Text>
+          <Text className='display-block'  decode >2.搜索功能&nbsp;</Text>
+          <Text className='display-block'  decode >3.历史查询&nbsp;</Text>
+          <Text className='display-block'  decode >4.番剧放送详情页&nbsp;</Text>
         </AtCard>
       </View>
       

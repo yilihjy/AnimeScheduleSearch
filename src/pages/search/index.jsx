@@ -169,7 +169,7 @@ class Search extends Component {
         {searchTipList}
       </AtList>
       <View className='text-center'>
-        <Text className='see-search-result' onClick={this.onActionClick.bind(this)}>查看“{this.state.tipKeyWord}”的搜索结果</Text>
+        <Text className='display-block see-search-result'  decode   onClick={this.onActionClick.bind(this)}>查看“{this.state.tipKeyWord}”的搜索结果</Text>
       </View>
     </View>
     )
