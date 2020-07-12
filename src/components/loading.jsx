@@ -19,16 +19,11 @@ class Loading extends Component {
 
   render () {
     const { shellStore: { loading } } = this.props
-    let loadstatus
-    if(loading) {
-        loadstatus =(
-            <View className='loading_container'>
-                <AtActivityIndicator mode='center'></AtActivityIndicator>
-            </View>)
-    } else {
-        loadstatus = (<View />)
-    }
-    return loadstatus
+    return loading && (
+      <View className='loading_container'>
+          <AtActivityIndicator mode='center'></AtActivityIndicator>
+      </View>
+    )
   }
 }
 

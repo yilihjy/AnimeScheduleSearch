@@ -426,7 +426,6 @@ class Detail extends Component {
             
             <AtTabs
               current={this.state.atTabsCurrent}
-              scroll
               tabList={[
                 { title: '放送信息' },
                 { title: '番剧详情' }

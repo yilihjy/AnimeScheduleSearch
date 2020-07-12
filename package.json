@@ -9,13 +9,13 @@
 		"css": "sass"
 	},
 	"scripts": {
-		"build:weapp": "taro build --type weapp",
-		"build:swan": "taro build --type swan",
-		"build:alipay": "taro build --type alipay",
-		"build:tt": "taro build --type tt",
-		"build:h5": "taro build --type h5",
-		"build:rn": "taro build --type rn",
-		"build:qq": "taro build --type qq",
+		"build:weapp": "npx taro build --type weapp",
+		"build:swan": "npx taro build --type swan",
+		"build:alipay": "npx taro build --type alipay",
+		"build:tt": "npx taro build --type tt",
+		"build:h5": "npx taro build --type h5",
+		"build:rn": "npx taro build --type rn",
+		"build:qq": "npx taro build --type qq",
 		"build:quickapp": "taro build --type quickapp",
 		"dev:weapp": "npm run build:weapp -- --watch",
 		"dev:swan": "npm run build:swan -- --watch",
@@ -58,6 +58,7 @@
 		"taro-ui": "^2.3.4"
 	},
 	"devDependencies": {
+		"@tarojs/cli":"2.2.10",
 		"@tarojs/mini-runner": "2.2.10",
 		"@tarojs/webpack-runner": "2.2.10",
 		"@types/react": "^16.4.6",

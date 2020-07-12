@@ -158,7 +158,6 @@ class Index extends Component {
         <View className='recent-air'>
           <AtTabs
             current={atTabsCurrent}
-            scroll
             tabList={[
               { title: '周日' },
               { title: '周一' },
