@@ -1,10 +1,9 @@
 {
-  "extends": ["eslint:recommended","taro"],
+  "extends": ["eslint:recommended","taro/react"],
   "rules": {
     "no-console": "off",
     "semi": ["error", "never"],
     "no-unused-vars": ["error", { "varsIgnorePattern": "Taro" }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx"] }]
-  },
-  "parser": "babel-eslint"
+  }
 }

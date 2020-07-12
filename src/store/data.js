@@ -336,5 +336,4 @@ export class DataStore {
     }
 
 }
-
 export default new DataStore()

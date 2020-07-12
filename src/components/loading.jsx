@@ -1,6 +1,7 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
-import { observer, inject } from '@tarojs/mobx'
+import Taro from '@tarojs/taro'
+import React, { Component }  from 'react'
+import { observer, inject } from 'mobx-react'
 import { View } from '@tarojs/components'
 import { AtActivityIndicator   } from "taro-ui"
 
@@ -19,16 +20,12 @@ class Loading extends Component {
 
   render () {
     const { shellStore: { loading } } = this.props
-    let loadstatus
-    if(loading) {
-        loadstatus =(
-            <View className='loading_container'>
-                <AtActivityIndicator mode='center'></AtActivityIndicator>
-            </View>)
-    } else {
-        loadstatus = (<View />)
-    }
-    return loadstatus
+    console.log(`loading:${loading}`)
+    return loading && (
+      <View className='loading_container'>
+          <AtActivityIndicator mode='center'></AtActivityIndicator>
+      </View>
+    )
   }
 }
 

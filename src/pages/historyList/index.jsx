@@ -1,7 +1,8 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
+import React, { Component }  from 'react'
 import { View } from '@tarojs/components'
-import { observer, inject } from '@tarojs/mobx'
+import { observer, inject } from 'mobx-react'
 import Shell from '../../components/shell'
 import ItemList from '../../components/ItemList'
 
@@ -14,10 +15,6 @@ import './index.scss'
 @observer
 class HistoryList extends Component {
 
-  config = {
-    navigationBarTitleText: '历史动画列表'
-  }
-
   constructor (props) {
     super(props)
     this.state = {
@@ -26,7 +23,7 @@ class HistoryList extends Component {
   }
 
   componentDidShow() {
-    const {year,month} = this.$router.params
+    const {year,month} = getCurrentInstance().router.params
     const {shellStore, dataStore} = this.props
     shellStore.whenInitPage(`${year}年${month-0}月开播动画`)
     const list = dataStore.filter({year,month})

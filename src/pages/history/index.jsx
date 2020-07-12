@@ -1,7 +1,8 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component }  from 'react'
 import { View } from '@tarojs/components'
-import { observer, inject } from '@tarojs/mobx'
+import { observer, inject } from 'mobx-react'
 import { AtAccordion, AtPagination , AtList, AtListItem, AtTabBar  } from 'taro-ui'
 
 
@@ -14,10 +15,6 @@ import './index.scss'
 @inject('shellStore')
 @observer
 class History extends Component {
-
-  config = {
-    navigationBarTitleText: '番剧放送速查'
-  }
 
   constructor (props) {
     super(props)

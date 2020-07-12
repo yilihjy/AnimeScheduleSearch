@@ -1,8 +1,9 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
+import React, { Component }  from 'react'
 import { View,Text } from '@tarojs/components'
 import {  AtAccordion, AtTabBar, AtTabs, AtTabsPane, AtList, AtListItem,  AtButton    } from "taro-ui"
-import { observer, inject } from '@tarojs/mobx'
+import { observer, inject } from 'mobx-react'
 import Shell from '../../components/shell'
 import Loading from '../../components/loading'
 import ItemList from '../../components/ItemList'
@@ -20,10 +21,6 @@ import './index.scss'
 @observer
 class Index extends Component {
 
-  config = {
-    navigationBarTitleText: '番剧放送速查'
-  }
-
   constructor (props) {
     super(props)
     this.state = {
@@ -35,8 +32,6 @@ class Index extends Component {
     }
   }
 
-  componentWillMount() {
-  }
 
   componentDidShow() {
     const {shellStore} = this.props
@@ -44,7 +39,7 @@ class Index extends Component {
     Taro.showShareMenu({
       withShareTicket: false
     })
-    const params = this.$router.params
+    const params = getCurrentInstance().router.params
     if(params.attab) {
       this.setState({
         atTabBarCurrent: parseInt(params.attab)
@@ -158,7 +153,6 @@ class Index extends Component {
         <View className='recent-air'>
           <AtTabs
             current={atTabsCurrent}
-            scroll
             tabList={[
               { title: '周日' },
               { title: '周一' },

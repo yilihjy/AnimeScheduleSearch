@@ -1,8 +1,9 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component }  from 'react'
 import { View, Text } from '@tarojs/components'
 import { AtSearchBar, AtList, AtListItem, AtLoadMore  } from 'taro-ui'
-import { observer, inject } from '@tarojs/mobx'
+import { observer, inject } from 'mobx-react'
 import _debounce  from 'lodash.debounce'
 import Shell from '../../components/shell'
 import { DataStore} from '../../store/data'
@@ -15,10 +16,6 @@ import './index.scss'
 @inject('shellStore')
 @observer
 class Search extends Component {
-
-  config = {
-    navigationBarTitleText: '番剧放送速查'
-  }
 
   constructor (props) {
     super(props)

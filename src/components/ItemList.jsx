@@ -1,5 +1,6 @@
 /* eslint-disable react/sort-comp */
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component }  from 'react'
 import { View } from '@tarojs/components'
 import { AtList, AtListItem,AtLoadMore  } from "taro-ui"
 import './ItemList.scss'

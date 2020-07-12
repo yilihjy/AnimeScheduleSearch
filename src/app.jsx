@@ -1,50 +1,21 @@
-import Taro, { Component } from '@tarojs/taro'
-import { Provider, onError } from '@tarojs/mobx'
-import Index from './pages/index'
+import Taro from '@tarojs/taro'
+import React, { Component }  from 'react'
+import { Provider } from 'mobx-react'
 import shellStore from './store/shell'
 import dataStore, {DataStore} from './store/data'
 
 import './app.scss'
 
-const store = {
-  shellStore,
-  dataStore
-}
+// const store = {
+//   shellStore,
+//   dataStore
+// }
 
 class App extends Component {
 
-  componentWillMount() {
-    onError(error => {
-      console.log('mobx global error listener:', error)
-    })
+  componentDidMount() {
     this.requestData()
   }
-
-  componentDidMount () {}
-
-  config = {
-    pages: [
-      'pages/index/index',
-      'pages/about/index',
-      'pages/detail/index',
-      'pages/history/index',
-      'pages/historyList/index',
-      'pages/search/index'
-      
-    ],
-    window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
-    }
-  }
-
-  componentDidShow () {}
-
-  componentDidHide () {}
-
-  componentDidCatchError () {}
 
   async requestData() {
     shellStore.showLoading()
@@ -96,11 +67,11 @@ class App extends Component {
   // 请勿修改此函数
   render () {
     return (
-      <Provider store={store}>
-        <Index />
+      <Provider shellStore={shellStore} dataStore={dataStore}>
+        {this.props.children}
       </Provider>
     )
   }
 }
 
-Taro.render(<App />, document.getElementById('app'))
+export default App
