@@ -44,6 +44,12 @@ class Index extends Component {
     Taro.showShareMenu({
       withShareTicket: false
     })
+    const params = this.$router.params
+    if(params.attab) {
+      this.setState({
+        atTabBarCurrent: parseInt(params.attab)
+      })
+    }
   }
 
 
@@ -66,6 +72,11 @@ class Index extends Component {
   }
 
   onAtTabBarClick(value) {
+    if(value==2) {
+      Taro.redirectTo({
+        url: `/pages/history/index`
+      })
+    }
     this.setState({
       atTabBarCurrent: value
     })
@@ -182,7 +193,8 @@ class Index extends Component {
           fixed
           tabList={[
             { title: '每日放送', iconType: 'calendar'},
-            { title: '最近放送', iconType: 'bullet-list' }
+            { title: '最近放送', iconType: 'bullet-list' },
+            { title: '历史查询', iconType: 'folder' }
           ]}
           onClick={this.onAtTabBarClick.bind(this)}
           current={atTabBarCurrent}

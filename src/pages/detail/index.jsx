@@ -63,7 +63,7 @@ class Detail extends Component {
       return datainitFinished
     },()=>{
       if(params.bgmid) {
-        this.queryDataByBgmid(params.bgmid)
+        this.queryDataByBgmid(params.bgmid, params.year, params.month)
       }else {
         this.queryData(params.id, params.year, params.month)
       }
@@ -80,7 +80,18 @@ class Detail extends Component {
     })
   }
 
+  onShareAppMessage () {
+    const {extraData} = this.state
+    return {
+      title: `快来看《${extraData.name_cn||extraData.name}》的放送信息吧！`,
+    }
+  }
+
   queryDataByBgmid(bgmid,year, month) {
+    console.log(bgmid,year, month)
+    this.setState({
+      bgmid: bgmid
+    })
     this.getExtraData(bgmid)
     const {dataStore} = this.props
     try {
@@ -88,6 +99,11 @@ class Detail extends Component {
       result = dataStore.filter({year,month}).filter((value)=>{
         return value.bangumiID == bgmid
       })
+      if(result.length == 0 ) {
+        result = dataStore.filter({}).filter((value)=>{
+          return value.bangumiID == bgmid
+        })
+      }
       if(result.length == 1) {
         this.setState({
           bangumiData: result[0],
@@ -97,12 +113,6 @@ class Detail extends Component {
           this.setState({
             isNew: true
           })
-        }
-        if(result[0].bangumiID) {
-          this.setState({
-            bgmid: result[0].bangumiID
-          })
-          this.getExtraData(result[0].bangumiID)
         }
       } else {
         this.setState({
@@ -379,6 +389,14 @@ class Detail extends Component {
     }
   }
 
+  isLongTitle(title) {
+    if(title && title.length >20) {
+      return true
+    }else {
+      return false
+    }
+  }
+
   render () {
     const {bangumiData,extraData,epPageStart,epPageCurrent,epPageSize}  = this.state
     const { dataStore:{datainitFinished,canReTry}} = this.props
@@ -395,7 +413,8 @@ class Detail extends Component {
             <Image className='top-img' mode='aspectFit' src={this.state.image} />
             <View className='main-title'>
               {extraData.rating &&<AtRate max={10} value={extraData.rating.score} size={15} />}
-              <Text >{extraData.name_cn || extraData.name}</Text>
+              {this.isLongTitle(extraData.name_cn || extraData.name) && <Text className='longtitle' >{extraData.name_cn || extraData.name}</Text>}
+              {!this.isLongTitle(extraData.name_cn || extraData.name) && <Text >{extraData.name_cn || extraData.name}</Text>}
             </View>
             
           </View>}

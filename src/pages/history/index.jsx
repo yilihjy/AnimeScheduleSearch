@@ -2,7 +2,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { observer, inject } from '@tarojs/mobx'
-import { AtAccordion, AtPagination , AtList, AtListItem  } from 'taro-ui'
+import { AtAccordion, AtPagination , AtList, AtListItem, AtTabBar  } from 'taro-ui'
 
 
 import Shell from '../../components/shell'
@@ -25,6 +25,7 @@ class History extends Component {
       openMap:{},
       pageStart: 0,
       pageSize:10,
+      atTabBarCurrent: 2,
       currentPage:1
     }
   }
@@ -81,8 +82,20 @@ class History extends Component {
     })
   }
 
+  onAtTabBarClick(value) {
+    if(value!==2) {
+      Taro.redirectTo({
+        url: `/pages/index/index?attab=${value}`
+      })
+    }
+    this.setState({
+      atTabBarCurrent: value
+    })
+  }
+
   render () {
     const { dataStore: {yearKey,yearMonthKey}} = this.props
+    const {atTabBarCurrent} = this.state
     const total  = yearKey.slice().length
     const current = this.state.currentPage
     return (
@@ -94,7 +107,7 @@ class History extends Component {
              key={value}
              open={this.state.openMap[value]}
              onClick={this.handleClick.bind(this,value)}
-             title={`${value}年`}
+             title={`${value}年开播动画`}
            >
              {this.buildMonth(yearMonthKey,value)}
            </AtAccordion>
@@ -110,6 +123,16 @@ class History extends Component {
           >
           </AtPagination>
         </View>
+        <AtTabBar
+          fixed
+          tabList={[
+            { title: '每日放送', iconType: 'calendar'},
+            { title: '最近放送', iconType: 'bullet-list' },
+            { title: '历史查询', iconType: 'folder' }
+          ]}
+          onClick={this.onAtTabBarClick.bind(this)}
+          current={atTabBarCurrent}
+        />
       </View>
       
     )

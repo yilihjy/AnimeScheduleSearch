@@ -9,7 +9,7 @@
         title:'番剧检索',
         name:'search',
         isInMuen:true,
-        isNewPage: false
+        isNewPage: true
 
     },
     {
@@ -21,7 +21,7 @@
         title:'关于小程序',
         name:'about',
         isInMuen:true,
-        isNewPage: false
+        isNewPage: true
     },
     {
         title:'番剧放送详情',

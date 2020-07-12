@@ -54,10 +54,31 @@
 			"current": -1,
 			"list": [
 				{
-					"id": -1,
-					"name": "pages/detail/index",
+					"id": 0,
+					"name": "基于bgmid进入详情页",
 					"pathName": "pages/detail/index",
-					"query": "bgmid=277954&year=2020&month=07&__key_=15943765029831",
+					"query": "bgmid=277954&year=2020&month=07",
+					"scene": 1007
+				},
+				{
+					"id": -1,
+					"name": "基于bgmid进入详情页未提供年月",
+					"pathName": "pages/detail/index",
+					"query": "bgmid=277954",
+					"scene": 1007
+				},
+				{
+					"id": 2,
+					"name": "基于id进入详情页没有提供年月",
+					"pathName": "pages/detail/index",
+					"query": "id=df4678d00936767242865d5728c72c8d",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "基于id进入详情页",
+					"pathName": "pages/detail/index",
+					"query": "id=e75f8828501361d8508e7a516755cb48&year=2020&month=07",
 					"scene": 1007
 				}
 			]

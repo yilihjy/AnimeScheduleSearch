@@ -1,11 +1,11 @@
 /* eslint-disable react/sort-comp */
 import Taro, { Component } from '@tarojs/taro'
-import { View ,Text} from '@tarojs/components'
+import { View ,Text,Image} from '@tarojs/components'
 import { AtCard } from "taro-ui"
 import { observer, inject } from '@tarojs/mobx'
 import Shell from '../../components/shell'
 import ClipboardURL  from '../../components/clipboardURL'
-
+// import ercodeimage from '../../images/contact.jpg'
 
 import './index.scss'
 
@@ -46,6 +46,9 @@ class About extends Component {
         >
           <Text>邮箱\n</Text>
           <ClipboardURL text='yilihjy@gmail.com'></ClipboardURL>
+          <Text>\n微信\n</Text>
+          <Image className='ercode' src='../../images/contact.jpg'></Image>
+          <Text>截屏识别二维码添加作者微信，请备注小程序交流\n</Text>
         </AtCard>
         <AtCard 
           className='about-card'

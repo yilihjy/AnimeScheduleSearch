@@ -30,8 +30,9 @@ export class DataStore {
     }
 
     static checkCache() {
-        const lastSave = Taro.getStorageSync('latest-save')
-        return lastSave && Math.abs((new Date()).valueOf()-lastSave)<86400000
+        // const lastSave = Taro.getStorageSync('latest-save')
+        // return lastSave && Math.abs((new Date()).valueOf()-lastSave)<86400000
+        return false
     }
 
     @action.bound
