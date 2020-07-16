@@ -35,7 +35,6 @@ class Detail extends Component {
       infoList: [],
       downloadList: [],
       foreignList: [],
-      isNew: false,
       bgmid: null,
       extraData: {},
       image:'',
@@ -50,6 +49,7 @@ class Detail extends Component {
       modalDate:{},
       modalType:'',
       noData: false,
+      requestTask: null
     } 
   }
 
@@ -76,6 +76,14 @@ class Detail extends Component {
       withShareTicket: false
     })
   }
+
+  componentWillUnmount() {
+    if(this.state.requestTask) {
+      console.log('abort request')
+      this.state.requestTask.abort()
+    }
+  }
+
 
   onShareAppMessage () {
     const {extraData} = this.state
@@ -106,11 +114,6 @@ class Detail extends Component {
           bangumiData: result[0],
           noData: false
         })
-        if(result[0].type=='tv' && result[0].end=='') {
-          this.setState({
-            isNew: true
-          })
-        }
       } else {
         this.setState({
           noData: true
@@ -133,11 +136,6 @@ class Detail extends Component {
           bangumiData: result[0],
           noData: false
         })
-        if(result[0].type=='tv' && result[0].end=='') {
-          this.setState({
-            isNew: true
-          })
-        }
         if(result[0].bangumiID) {
           this.setState({
             bgmid: result[0].bangumiID
@@ -157,8 +155,12 @@ class Detail extends Component {
   async getExtraData(id) {
     try {
       const subject = id || this.state.bgmid
-      const res = await Taro.request({
+      const requestTask = Taro.request({
         url: `https://cdn.jsdelivr.net/npm/anime-sachedule-search-data@0.1/dist/subject/${subject}.json`
+      })
+      const res = await requestTask
+      this.setState({
+        requestTask: requestTask
       })
       let imageUrl
       try {
@@ -290,9 +292,9 @@ class Detail extends Component {
       modalHeader = (<AtModalHeader>{modalDate.name_cn || modalDate.name || '没有详细放送信息'}</AtModalHeader>)
       modalContent = (
         <AtModalContent>
-          <Text>放送日期：{modalDate.airdate || '无数据'}</Text>
-          {modalDate.duration && <Text>时长：{modalDate.duration}</Text>}
-          {modalDate.desc && <Text>{modalDate.desc}</Text>}
+          <Text className='display-block'  decode >放送日期：{modalDate.airdate || '无数据'}&nbsp;</Text>
+          {modalDate.duration && <Text className='display-block'  decode >时长：{modalDate.duration}&nbsp;</Text>}
+          {modalDate.desc && <Text className='display-block'  decode >{modalDate.desc}</Text>}
         </AtModalContent>
       )
     }
@@ -343,11 +345,11 @@ class Detail extends Component {
           {modalDate.images && (<View className='modal-image'>
             <Image style='width: 150px;' mode='widthFix' src={checkImg(modalDate.images,'medium')}></Image>
           </View>)}
-          {modalDate.role_name && <Text>{modalDate.role_name}</Text>}
+          {modalDate.role_name && <Text className='display-block'  decode >{modalDate.role_name}&nbsp;</Text>}
           {infoList.map(value=>{
-            return <Text key={value.item}>{value.item}: {value.value}</Text>
+            return <Text className='display-block'  decode  key={value.item}>{value.item}: {value.value}&nbsp;</Text>
           })}
-          {(modalType=='staff' && modalDate.jobs) && (<Text>职位：{modalDate.jobs.join(' ')}</Text>)}
+          {(modalType=='staff' && modalDate.jobs) && (<Text className='display-block'  decode >职位：{modalDate.jobs.join(' ')}&nbsp;</Text>)}
         </AtModalContent>
       )
     }
@@ -410,14 +412,13 @@ class Detail extends Component {
             <Image className='top-img' mode='aspectFit' src={this.state.image} />
             <View className='main-title'>
               {extraData.rating &&<AtRate max={10} value={extraData.rating.score} size={15} />}
-              {this.isLongTitle(extraData.name_cn || extraData.name) && <Text className='longtitle' >{extraData.name_cn || extraData.name}</Text>}
-              {!this.isLongTitle(extraData.name_cn || extraData.name) && <Text >{extraData.name_cn || extraData.name}</Text>}
+              {this.isLongTitle(extraData.name_cn || extraData.name) && <Text className='display-block longtitle'  decode  >{extraData.name_cn || extraData.name}</Text>}
+              {!this.isLongTitle(extraData.name_cn || extraData.name) && <Text className='display-block'  decode  >{extraData.name_cn || extraData.name}</Text>}
             </View>
             
           </View>}
           {!canReTry &&(<AtCard
             note='小提示:点击网址可以复制到剪切板🍻'
-            extra={this.state.isNew?'新番':''}
             title={extraData.name_cn || bangumiData.title || extraData.name}
           > 
             
@@ -433,126 +434,128 @@ class Detail extends Component {
                 {!this.state.noData &&(<View>
                 {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['zh-Hans']) 
             && <View>
-                
-                <Text>原始名称：{bangumiData.title}</Text>
-                
-                {bangumiData.titleTranslate['zh-Hans'].length>0 && <Text>简体中文译名：</Text>}
+                <Text className='display-block'  decode >&nbsp;</Text>
+                <Text className='display-block'  decode >原始名称：&nbsp;</Text>
+                <Text className='display-block'  decode >{bangumiData.title}</Text>
+                <Text className='display-block'  decode >&nbsp;</Text>
+                {bangumiData.titleTranslate['zh-Hans'].length>0 && <Text className='display-block'  decode >简体中文译名：&nbsp;</Text>}
                 {bangumiData.titleTranslate['zh-Hans'].map(value=>{
                   return (
-                    <Text key={value}>{value}</Text>
+                    <Text className='display-block'  decode  key={value}>{value}&nbsp;</Text>
                     )
                   })}
-                  
+                  <Text className='display-block'  decode >&nbsp;</Text>
               </View>
             }
             {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['zh-Hant']) 
             && <View>
-                {bangumiData.titleTranslate['zh-Hant'].length>0 && <Text>繁体中文译名：</Text>}
+                {bangumiData.titleTranslate['zh-Hant'].length>0 && <Text className='display-block'  decode >繁体中文译名：&nbsp;</Text>}
                 {bangumiData.titleTranslate['zh-Hant'].map(value=>{
                   return (
-                    <Text key={value}>{value}</Text>
+                    <Text className='display-block'  decode  key={value}>{value}&nbsp;</Text>
                     )
                   })}
-                  
+                  <Text className='display-block'  decode >&nbsp;</Text>
               </View>
             }
             {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['ja']) 
             && <View>
-                {bangumiData.titleTranslate['ja'].length>0 && <Text>日文译名：</Text>}
+                {bangumiData.titleTranslate['ja'].length>0 && <Text className='display-block'  decode >日文译名：&nbsp;</Text>}
                 {bangumiData.titleTranslate['ja'].map(value=>{
                   return (
-                    <Text key={value}>{value}</Text>
+                    <Text className='display-block'  decode  key={value}>{value}&nbsp;</Text>
                     )
                   })}
-                  
+                  <Text className='display-block'  decode >&nbsp;</Text>
               </View>
             }
             {_isObject(bangumiData.titleTranslate) && _isArray(bangumiData.titleTranslate['en']) 
             && <View>
-                {bangumiData.titleTranslate['en'].length>0 && <Text>英文译名：</Text>}
+                {bangumiData.titleTranslate['en'].length>0 && <Text className='display-block'  decode >英文译名：&nbsp;</Text>}
                 {bangumiData.titleTranslate['en'].map(value=>{
                   return (
-                    <Text key={value}>{value}</Text>
+                    <Text className='display-block'  decode  key={value}>{value}&nbsp;</Text>
                     )
                   })}
-                  
+                  <Text className='display-block'  decode >&nbsp;</Text>
               </View>
             }
-            {bangumiData.lang && <Text>番剧语言：{DataStore.langCode2Text(bangumiData.lang)}</Text>}
-            {bangumiData.type && <Text>番剧类型：{bangumiData.type}</Text>}
+            {bangumiData.lang && <Text className='display-block'  decode >番剧语言：{DataStore.langCode2Text(bangumiData.lang)}&nbsp;</Text>}
+            {bangumiData.type && <Text className='display-block'  decode >番剧类型：{bangumiData.type}&nbsp;</Text>}
             {bangumiData.officialSite && bangumiData.officialSite.length>0 && 
             (<View>
-              <Text>官方网站：</Text> <ClipboardURL text={bangumiData.officialSite} />
+              <Text className='display-block'  decode >官方网站：</Text> <ClipboardURL text={bangumiData.officialSite} /><Text className='display-block'  decode >&nbsp;</Text>
             </View>)}
-            
-            <Text>{
+            <Text className='display-block'  decode >{
               {
                 'tv': `开播时间：${formatDate(bangumiData.begin,true)}`,
                 'ova': `发售时间：${formatDate(bangumiData.begin)}`,
                 'web': `开播时间：${formatDate(bangumiData.begin,true)}`,
                 'movie': `上映时间：${formatDate(bangumiData.begin)}`
               }[bangumiData.type]
-            }</Text>
+            }&nbsp;</Text>
             {
               {
-                'tv': <Text>完结时间：{bangumiData.end ? formatDate(bangumiData.end,true):'未完结'}</Text>,
-                'ova': <Text>最终话发售时间：{bangumiData.end ? formatDate(bangumiData.end):'未确定'}</Text>,
-                'web': <Text>完结时间：{bangumiData.end ? formatDate(bangumiData.end,true):'未完结'}</Text>,
+                'tv': <Text className='display-block'  decode >完结时间：{bangumiData.end ? formatDate(bangumiData.end,true):'未完结'}</Text>,
+                'ova': <Text className='display-block'  decode >最终话发售时间：{bangumiData.end ? formatDate(bangumiData.end):'未确定'}</Text>,
+                'web': <Text className='display-block'  decode >完结时间：{bangumiData.end ? formatDate(bangumiData.end,true):'未完结'}</Text>,
                 'movie': ''
               }[bangumiData.type]
             }
-            
-            {this.state.onlineList.length>0 &&<Text className='item_title'>国内在线观看平台</Text>}
+            <Text className='display-block'  decode >&nbsp;</Text>
+            {this.state.onlineList.length>0 &&<Text className='display-block item_title'  decode  >国内在线观看平台&nbsp;</Text>}
             {this.state.onlineList.map(value=>{
               return (<View key={value.site}>
-                         <Text>{value.siteTitle}（点击链接可复制到剪贴板）</Text> 
+                         <Text className='display-block'  decode >{value.siteTitle}（点击链接可复制到剪贴板）&nbsp;</Text> 
                          <ClipboardURL text={value.playURL} />
-                         
-                         {value.begin && <Text>开播时间：{formatDate(value.begin,true)}</Text>}
+                         <Text className='display-block'  decode ></Text>
+                         {value.begin && <Text className='display-block'  decode >开播时间：{formatDate(value.begin,true)}&nbsp;</Text>}
                       </View>)
             })}
-            {this.state.showForeignSite && this.state.foreignList.length>0 && <Text className='item_title'>海外在线观看平台</Text>}
+            {this.state.showForeignSite && this.state.foreignList.length>0 && <Text className='display-block item_title'  decode  >海外在线观看平台&nbsp;</Text>}
             {this.state.showForeignSite && this.state.foreignList.map(value=>{
               return (<View key={value.site}>
-                         <Text>{value.siteTitle}（点击链接可复制到剪贴板）</Text> 
+                         <Text className='display-block'  decode >{value.siteTitle}（点击链接可复制到剪贴板）&nbsp;</Text> 
                          <ClipboardURL text={value.playURL} />
-                         
-                         {value.begin && <Text>开播时间：{formatDate(value.begin,true)}</Text>}
+                         <Text className='display-block'  decode ></Text>
+                         {value.begin && <Text className='display-block item_title'  decode >开播时间：{formatDate(value.begin,true)}&nbsp;</Text>}
                       </View>)
             })}
-            {this.state.infoList.length>0 && <Text className='item_title'>资讯站点</Text>}
+            {this.state.infoList.length>0 && <Text className='display-block item_title'  decode  >资讯站点&nbsp;</Text>}
             {this.state.infoList.map(value=>{
               return (<View key={value.site}>
-                         <Text>{value.siteTitle}（点击链接可复制到剪贴板）</Text> 
+                         <Text className='display-block'  decode >{value.siteTitle}（点击链接可复制到剪贴板）&nbsp;</Text> 
                          <ClipboardURL text={value.playURL} />
-                         
+                         <Text className='display-block'  decode ></Text>
                       </View>)
             })}
-            {this.state.showDownloadSite && this.state.downloadList.length>0 && <Text className='item_title'>下载站点</Text>}
+            {this.state.showDownloadSite && this.state.downloadList.length>0 && <Text className='display-block item_title'  decode  >下载站点&nbsp;</Text>}
             {this.state.showDownloadSite &&  this.state.downloadList.map(value=>{
               return (<View key={value.site}>
-                         <Text>{value.siteTitle}（点击链接可复制到剪贴板）</Text> 
+                         <Text className='display-block'  decode >{value.siteTitle}（点击链接可复制到剪贴板）&nbsp;</Text> 
                          <ClipboardURL text={value.playURL} />
-                         
+                         <Text className='display-block'  decode >&nbsp;</Text>
                       </View>)
             })}
                 </View>)}
-                {this.state.noData && <Text>没有更多放送信息</Text>}
+                {this.state.noData && <View><Text className='display-block'  decode >&nbsp;</Text><Text className='display-block'  decode >&nbsp;没有更多放送信息&nbsp;</Text></View>}
               </AtTabsPane>
               <AtTabsPane current={this.state.atTabsCurrent} index={1}>
                 {extraData && 
                 <View>
                   {extraData.rating && 
                     <View>
+                      <Text className='display-block'  decode >&nbsp;</Text>
                       
-                      
-                      <Text>Bangumi评分: {extraData.rating.score}</Text>
-                      <Text>评分人数：{extraData.rating.total}</Text>
+                      <Text className='display-block'  decode >Bangumi评分: {extraData.rating.score}&nbsp;</Text>
+                      <Text className='display-block'  decode >评分人数：{extraData.rating.total}&nbsp;</Text>
                     </View>}
-                  
-                  {extraData.summary && <Text>剧情简介:</Text>}
-                  <Text>{extraData.summary}</Text>
-                  
+                  <Text className='display-block'  decode >&nbsp;</Text>
+                  {extraData.summary && <View>
+                     <Text className='display-block'  decode >剧情简介:&nbsp;</Text>
+                     <Text className='display-block'  decode >{extraData.summary}</Text>
+                     <Text className='display-block'  decode >&nbsp;</Text>
+                  </View>}
                   {(extraData.eps && extraData.eps.length>0) && (
                   <AtAccordion
                     title='分集放送信息'
@@ -564,7 +567,7 @@ class Detail extends Component {
                     {extraData.eps.reverse().slice(epPageStart,epPageStart+epPageSize).map((ep)=>{
                       return (<AtListItem 
                         key={ep.id} 
-                        title={`${ep.sort}: ${ep.name_cn || ep.name || '没有详细放送信息'}`}
+                        title={`${ep.sort}: ${ep.name_cn || ep.name || '没有分集标题信息'}`}
                         note={`放送日期：${ep.airdate || '无数据'} `}
                         onClick={this.openModal.bind(this,'ep',ep)}
                       />)
@@ -625,7 +628,7 @@ class Detail extends Component {
               </AtTabsPane>
             </AtTabs>
             
-           
+           <Text className='display-block'  decode >&nbsp;</Text>
           </AtCard>)}
         </View>
         )}

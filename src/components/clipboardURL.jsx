@@ -23,7 +23,7 @@ class ClipboardURL extends Component {
 
   render () {
     return (
-      <Text className='clip' onClick={this.onClickURL.bind(this)}>
+      <Text className='display-block clip'  decode  onClick={this.onClickURL.bind(this)}>
           {this.state.text}
       </Text>
     )

@@ -20,7 +20,6 @@ class Loading extends Component {
 
   render () {
     const { shellStore: { loading } } = this.props
-    console.log(`loading:${loading}`)
     return loading && (
       <View className='loading_container'>
           <AtActivityIndicator mode='center'></AtActivityIndicator>
